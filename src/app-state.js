@@ -3,7 +3,7 @@
 import { jsx } from "theme-ui";
 import { createContext, useContext, useReducer } from "react";
 
-const initialState = () => ({ token: "" });
+const initialState = () => ({ token: "", user: { id: "", img: "", name: "" } });
 
 const reducer = (state, action) => {
 	switch (action.type) {
@@ -12,6 +12,9 @@ const reducer = (state, action) => {
 
 		case "RESET":
 			return initialState();
+
+		case "UPDATE_USER":
+			return { ...state, user: action.payload };
 
 		default:
 			throw new Error();
