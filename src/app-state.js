@@ -3,12 +3,12 @@
 import { jsx } from "theme-ui";
 import { createContext, useContext, useReducer } from "react";
 
-const initialState = () => ({});
+const initialState = () => ({ token: "" });
 
 const reducer = (state, action) => {
 	switch (action.type) {
-		case "UPDATE_MEDIA_DEVICES":
-			return { ...state, mediaDevices: action.payload };
+		case "UPDATE_TOKEN":
+			return { ...state, token: action.payload };
 
 		case "RESET":
 			return initialState();

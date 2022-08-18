@@ -4,6 +4,8 @@ import { jsx } from "theme-ui";
 import { useState, Fragment } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
+import "./app.css";
+
 import Header from "./ui/header";
 import SetMaker from "./ui/setmaker/page";
 import Home from "./ui/home";
@@ -12,16 +14,18 @@ import PrivateRoute from "./ui/private-route";
 
 function App() {
 	return (
-		<Router basename={process.env.PUBLIC_URL || "/"}>
-			<Fragment>
-				<Routes>
-					<Route exact path="/" element={<PrivateRoute />}>
-						<Route exact path="/" element={<Header />} />
-					</Route>
-					<Route exact path="/login" element={<Login />} />
-				</Routes>
-			</Fragment>
-		</Router>
+		<div className="App">
+			<Router basename={process.env.PUBLIC_URL || "/"}>
+				<Fragment>
+					<Routes>
+						<Route exact path="/" element={<PrivateRoute />}>
+							<Route exact path="/" element={<Header />} />
+						</Route>
+						<Route exact path="/login" element={<Login />} />
+					</Routes>
+				</Fragment>
+			</Router>
+		</div>
 	);
 }
 
