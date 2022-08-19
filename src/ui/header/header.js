@@ -1,14 +1,13 @@
 import { useEffect } from "react";
-
-import AccountMenu from "./account-menu";
 import { AppBar, Container, Toolbar, Typography, Box } from "@mui/material";
 import axios from "axios";
 
-import { useAppState, useDispatch } from "./app-state";
+import AccountMenu from "./account-menu";
+import { useStudioState, useDispatch } from "../../studio-state";
 
 const Header = () => {
 	const dispatch = useDispatch();
-	const { user, token } = useAppState();
+	const { user, token } = useStudioState();
 
 	useEffect(() => {
 		getUserProfile();

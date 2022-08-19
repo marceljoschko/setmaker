@@ -1,14 +1,14 @@
-import { useAppState, useDispatch } from "./app-state";
 import { useEffect, Fragment, useState } from "react";
+import { Typography, Box } from "@mui/material";
 
-import Studio from "./app-page";
-import Header from "./header";
+import { useStudioState, useDispatch } from "./studio-state";
+import Studio from "./ui/studio/page";
+import Header from "./ui/header/header";
 import SpotifyLogin from "./spotify-login";
-import { AppBar, Container, Toolbar, Typography, Box } from "@mui/material";
 
 const App = () => {
 	const dispatch = useDispatch();
-	const { token } = useAppState();
+	const { token } = useStudioState();
 	const [activeStep, updateActiveStep] = useState(0);
 
 	useEffect(() => {
@@ -42,11 +42,7 @@ const App = () => {
 				>
 					<Typography
 						variant="h6"
-						noWrap
-						component="a"
-						href="/"
 						sx={{
-							display: { xs: "none", md: "flex" },
 							fontFamily: "monospace",
 							fontWeight: 700,
 							letterSpacing: ".3rem",
@@ -56,6 +52,7 @@ const App = () => {
 					>
 						setmaker
 					</Typography>
+
 					<SpotifyLogin />
 				</Box>
 			) : (

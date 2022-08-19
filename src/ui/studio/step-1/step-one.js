@@ -1,18 +1,18 @@
-import { ActionButtons, StepContainer, OptionButton } from "./elements";
+import { ActionButtons, StepContainer, OptionButton } from "../elements";
 import { Box, TextField, Button } from "@mui/material";
 import { Fragment } from "react";
 import {
-	useAppState,
+	useStudioState,
 	useDispatch,
 	PLAYLIST_SOURCE_NONE,
 	IMPORT_PLAYLIST,
-} from "./app-state";
+} from "../../../studio-state";
 
 import axios from "axios";
 
 export default function StepOne(props) {
 	const dispatch = useDispatch();
-	const { token, playlistChoice, playlistId } = useAppState();
+	const { token, playlistChoice, playlistId } = useStudioState();
 
 	const importPlaylist = async () => {
 		dispatch({ type: "CHOOSE_PLAYLIST", payload: IMPORT_PLAYLIST });
@@ -38,7 +38,6 @@ export default function StepOne(props) {
 		const tracks = response.data.tracks.items;
 
 		for (let i in tracks) {
-			console.log(tracks[i]);
 			let temp = tracks[i].track;
 			imported[temp.id] = {
 				popularity: temp.popularity,

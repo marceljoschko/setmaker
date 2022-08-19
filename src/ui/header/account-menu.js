@@ -1,20 +1,15 @@
-import * as React from "react";
-
+import { useState, Fragment } from "react";
 import {
 	Avatar,
 	Menu,
 	MenuItem,
-	AppBar,
 	IconButton,
 	Tooltip,
-	Container,
-	Toolbar,
-	Typography,
 	Box,
 } from "@mui/material";
 
 export default function AccountMenu(props) {
-	const [anchorEl, setAnchorEl] = React.useState(null);
+	const [anchorEl, setAnchorEl] = useState(null);
 	const open = Boolean(anchorEl);
 	const handleClick = (event) => {
 		setAnchorEl(event.currentTarget);
@@ -23,7 +18,7 @@ export default function AccountMenu(props) {
 		setAnchorEl(null);
 	};
 	return (
-		<React.Fragment>
+		<Fragment>
 			<Box
 				sx={{
 					display: "flex",
@@ -85,6 +80,6 @@ export default function AccountMenu(props) {
 			>
 				<MenuItem onClick={props.logout}>Logout</MenuItem>
 			</Menu>
-		</React.Fragment>
+		</Fragment>
 	);
 }
