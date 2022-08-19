@@ -1,6 +1,3 @@
-/** @jsxRuntime classic */
-/** @jsx jsx */
-import { jsx } from "theme-ui";
 import { createContext, useContext, useReducer } from "react";
 
 const initialState = () => ({ token: "", user: { id: "", img: "", name: "" } });

@@ -1,18 +1,10 @@
-/** @jsxRuntime classic */
-/** @jsx jsx */
-import { jsx } from "theme-ui";
 import { useAppState, useDispatch } from "./app-state";
-import { useEffect } from "react";
+import { useEffect, Fragment } from "react";
 
-import "./app.css";
-
+import Main from "./main";
 import Header from "./header";
-
-const CLIENT_ID = "c69871587c924a0c8bc3573cc3704410";
-const REDIRECT_URI = "http://localhost:3000";
-const AUTH_ENDPOINT = "https://accounts.spotify.com/authorize";
-const RESPONSE_TYPE = "token";
-const AUTH_SCOPE = "playlist-read-private playlist-modify-private";
+import SpotifyLogin from "./spotify-login";
+import { AppBar, Container, Toolbar, Typography, Box } from "@mui/material";
 
 const App = () => {
 	const dispatch = useDispatch();
@@ -36,22 +28,42 @@ const App = () => {
 	}, [dispatch]);
 
 	return (
-		<div className="App">
+		<Fragment>
 			{!token ? (
-				<div>
-					<h1>setmaker</h1>
-					<a
-						href={`${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=${RESPONSE_TYPE}`}
+				<Box
+					sx={{
+						display: "flex",
+						alignItems: "center",
+						justifyContent: "center",
+						flexDirection: "column",
+						minHeight: "100vh",
+					}}
+				>
+					<Typography
+						variant="h6"
+						noWrap
+						component="a"
+						href="/"
+						sx={{
+							display: { xs: "none", md: "flex" },
+							fontFamily: "monospace",
+							fontWeight: 700,
+							letterSpacing: ".3rem",
+							color: "inherit",
+							textDecoration: "none",
+						}}
 					>
-						Login to Spotify
-					</a>
-				</div>
+						setmaker
+					</Typography>
+					<SpotifyLogin />
+				</Box>
 			) : (
-				<div>
+				<Box>
 					<Header />
-				</div>
+					<Main />
+				</Box>
 			)}
-		</div>
+		</Fragment>
 	);
 };
 

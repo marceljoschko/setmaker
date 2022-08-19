@@ -1,8 +1,7 @@
-/** @jsxRuntime classic */
-/** @jsx jsx */
 import { useEffect } from "react";
-import { jsx } from "theme-ui";
 
+import AccountMenu from "./account-menu";
+import { AppBar, Container, Toolbar, Typography, Box } from "@mui/material";
 import axios from "axios";
 
 import { useAppState, useDispatch } from "./app-state";
@@ -18,6 +17,7 @@ const Header = () => {
 	const logout = () => {
 		dispatch({ type: "UPDATE_TOKEN", payload: "" });
 		window.localStorage.removeItem("token");
+		window.location.reload(false);
 	};
 
 	const getUserProfile = async () => {
@@ -36,12 +36,44 @@ const Header = () => {
 	};
 
 	return (
-		<div>
-			<h1>setmaker</h1>
-			<button>
-				<img src={user.img} alt={user.name} onClick={logout} />
-			</button>
-		</div>
+		<AppBar
+			position="static"
+			sx={{ backgroundImage: "none", boxShadow: "none", height: "12vh" }}
+		>
+			<Container maxWidth="xl">
+				<Toolbar disableGutters>
+					<Typography
+						variant="h6"
+						noWrap
+						component="a"
+						href="/"
+						sx={{
+							display: { xs: "none", md: "flex" },
+							fontFamily: "monospace",
+							fontWeight: 700,
+							letterSpacing: ".3rem",
+							color: "inherit",
+							textDecoration: "none",
+						}}
+					>
+						setmaker
+					</Typography>
+					<Box
+						sx={{
+							flexGrow: 1,
+							display: { xs: "none", md: "flex" },
+						}}
+					/>
+					<Box sx={{ flexGrow: 0 }}>
+						<AccountMenu
+							userName={user.name}
+							userImg={user.img}
+							logout={logout}
+						/>
+					</Box>
+				</Toolbar>
+			</Container>
+		</AppBar>
 	);
 };
 
