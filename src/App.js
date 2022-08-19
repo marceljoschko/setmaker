@@ -1,7 +1,7 @@
 import { useAppState, useDispatch } from "./app-state";
-import { useEffect, Fragment } from "react";
+import { useEffect, Fragment, useState } from "react";
 
-import Main from "./main";
+import Studio from "./app-page";
 import Header from "./header";
 import SpotifyLogin from "./spotify-login";
 import { AppBar, Container, Toolbar, Typography, Box } from "@mui/material";
@@ -9,6 +9,7 @@ import { AppBar, Container, Toolbar, Typography, Box } from "@mui/material";
 const App = () => {
 	const dispatch = useDispatch();
 	const { token } = useAppState();
+	const [activeStep, updateActiveStep] = useState(0);
 
 	useEffect(() => {
 		const hash = window.location.hash;
@@ -60,7 +61,10 @@ const App = () => {
 			) : (
 				<Box>
 					<Header />
-					<Main />
+					<Studio
+						activeStep={activeStep}
+						updateActiveStep={updateActiveStep}
+					/>
 				</Box>
 			)}
 		</Fragment>

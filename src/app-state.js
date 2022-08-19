@@ -1,17 +1,35 @@
 import { createContext, useContext, useReducer } from "react";
 
-const initialState = () => ({ token: "", user: { id: "", img: "", name: "" } });
+export const PLAYLIST_SOURCE_NONE = "none";
+export const IMPORT_PLAYLIST = "import";
+
+const initialState = () => ({
+	token: "",
+	user: { id: "", img: "", name: "" },
+	playlistChoice: "none",
+	playlistId: "",
+	importedTracks: {},
+});
 
 const reducer = (state, action) => {
 	switch (action.type) {
 		case "UPDATE_TOKEN":
 			return { ...state, token: action.payload };
 
-		case "RESET":
-			return initialState();
-
 		case "UPDATE_USER":
 			return { ...state, user: action.payload };
+
+		case "CHOOSE_PLAYLIST":
+			return { ...state, playlistChoice: action.payload };
+
+		case "IMPORT_PLAYLIST_ID":
+			return { ...state, playlistId: action.payload };
+
+		case "IMPORT_PLAYLIST_TRACKS":
+			return { ...state, importedTracks: action.payload };
+
+		case "RESET":
+			return initialState();
 
 		default:
 			throw new Error();

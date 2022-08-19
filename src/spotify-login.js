@@ -15,7 +15,7 @@ const SpotifyLogin = () => {
 
 	return (
 		<div>
-			<Button variant="outlined" onClick={login}>
+			<Button color="primary" variant="outlined" onClick={login}>
 				Login to Spotify
 			</Button>
 		</div>
