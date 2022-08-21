@@ -1,13 +1,10 @@
 import { ActionButtons, StepContainer } from "../elements";
 import { Button } from "@mui/material";
 
-export default function StepFive(props) {
+export default function StepSix(props) {
 	return (
 		<StepContainer>
-			<h1>Results</h1>
-			<Button variant="outlined" onClick={props.nextStep}>
-				Create Playlist Spotify
-			</Button>
+			<h1>Happy mixing :)</h1>
 			<ActionButtons prev={{ onClick: props.previousStep }} />
 		</StepContainer>
 	);
