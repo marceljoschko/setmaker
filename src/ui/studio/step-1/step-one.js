@@ -90,11 +90,6 @@ const PlaylistSelection = ({ importPlaylist, startFromScratch }) => {
 					mx: "auto",
 					mb: 3,
 					flex: "1 0 auto",
-					maxHeight: ["none", "350px"],
-					"& > :first-of-type": {
-						mb: [3, 0],
-						mr: [0, 3],
-					},
 				}}
 			>
 				<OptionButton
