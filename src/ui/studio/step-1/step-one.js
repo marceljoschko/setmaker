@@ -9,6 +9,7 @@ import {
 } from "../../../studio-state";
 
 import axios from "axios";
+import { TextFields } from "@mui/icons-material";
 
 export default function StepOne(props) {
 	const dispatch = useDispatch();
@@ -42,6 +43,9 @@ export default function StepOne(props) {
 			imported[temp.id] = {
 				popularity: temp.popularity,
 				releaseDate: temp.album.release_date,
+				images: temp.album.images,
+				trackName: temp.name,
+				artists: temp.album.artists,
 			};
 		}
 
@@ -119,12 +123,11 @@ const ImportPlaylist = ({ reselectSource, startImport, useDispatch }) => {
 					flexDirection: "column",
 					maxWidth: 850,
 					width: "100%",
-					height: "100%",
 					mb: 3,
-					flex: "1 0 auto",
 				}}
 			>
 				<TextField
+					sx={{ minWidth: "250px" }}
 					id="standard-basic"
 					label="Playlist ID"
 					variant="standard"

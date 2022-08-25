@@ -26,7 +26,7 @@ const App = () => {
 			window.localStorage.setItem("token", token);
 		}
 		dispatch({ type: "UPDATE_TOKEN", payload: token });
-	}, [dispatch]);
+	}, []);
 
 	return (
 		<Fragment>

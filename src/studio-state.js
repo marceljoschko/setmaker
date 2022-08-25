@@ -9,6 +9,7 @@ const initialState = () => ({
 	playlistChoice: "none",
 	playlistId: "",
 	importedTracks: {},
+	sortedPlaylist: [],
 });
 
 const reducer = (state, action) => {
@@ -27,6 +28,9 @@ const reducer = (state, action) => {
 
 		case "IMPORT_PLAYLIST_TRACKS":
 			return { ...state, importedTracks: action.payload };
+
+		case "UPDATE_SORTED_PLAYLIST":
+			return { ...state, sortedPlaylist: action.payload };
 
 		case "RESET":
 			return initialState();

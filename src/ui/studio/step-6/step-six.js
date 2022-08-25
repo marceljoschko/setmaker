@@ -5,7 +5,9 @@ export default function StepSix(props) {
 	return (
 		<StepContainer>
 			<h1>Happy mixing :)</h1>
-			<ActionButtons prev={{ onClick: props.previousStep }} />
+			<Button variant="outlined" onClick={props.firstStep}>
+				Try Again
+			</Button>
 		</StepContainer>
 	);
 }
