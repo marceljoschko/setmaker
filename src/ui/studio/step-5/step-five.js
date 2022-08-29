@@ -16,15 +16,38 @@ import DraggableList from "react-draggable-lists";
 import { useStudioState, useDispatch } from "../../../studio-state";
 import { getCurrentDate } from "../../../util";
 
+import { useRef } from "react";
+
 import UploadAndDisplayImage from "./upload-image";
 
 export default function StepFive(props) {
 	const { sortedPlaylist } = useStudioState();
+	const trackListRef = useRef();
+
+	const getNewOrder = () => {
+		let tracklist = document.querySelectorAll("[data-track-id]");
+
+		const tempOrder = {};
+
+		for (let i in tracklist) {
+			let info = tracklist[i].parentElement.style.transform;
+			let first = info.slice(16);
+
+			let trackPosition =
+				parseInt(first.substring(0, first.indexOf("p"))) / 50;
+
+			tempOrder[trackPosition] =
+				tracklist[i].getAttribute("data-track-id");
+		}
+		const newOrder = Object.keys(tempOrder);
+
+		console.log(newOrder);
+	};
 
 	const generate = (items) => {
 		return items.map((item) =>
 			cloneElement(
-				<ListItem>
+				<ListItem data-track-id={item.id}>
 					<ListItemAvatar>
 						<Avatar alt={item.trackName} src={item.images[2].url} />
 					</ListItemAvatar>
@@ -47,7 +70,7 @@ export default function StepFive(props) {
 		<StepContainer>
 			<h1>Results</h1>
 
-			<Button variant="outlined" onClick={props.nextStep}>
+			<Button variant="outlined" onClick={getNewOrder}>
 				Create Playlist Spotify
 			</Button>
 			<Box sx={{ display: "flex", width: "600px", my: 3 }}>
@@ -57,6 +80,7 @@ export default function StepFive(props) {
 						flexDirection: "row",
 						width: "100%",
 						justifyContent: "space-between",
+						alignItems: "center",
 					}}
 				>
 					<Avatar
@@ -79,7 +103,12 @@ export default function StepFive(props) {
 
 			<Box sx={{ display: "flex" }}>
 				<List sx={{ display: "flex" }}>
-					<DraggableList width={800} height={50} rowSize={1}>
+					<DraggableList
+						ref={trackListRef}
+						width={800}
+						height={50}
+						rowSize={1}
+					>
 						{generate(sortedPlaylist)}
 					</DraggableList>
 				</List>
