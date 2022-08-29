@@ -30,3 +30,15 @@ const CAMELOT_MAJOR = [
 export const findCamelotKey = (key, mode) => {
 	return mode ? CAMELOT_MAJOR[key] : CAMELOT_MINOR[key];
 };
+
+export const getCurrentDate = () => {
+	let today = new Date();
+
+	return (
+		today.getFullYear() +
+		"-" +
+		(today.getMonth() + 1) +
+		"-" +
+		today.getDate()
+	);
+};
