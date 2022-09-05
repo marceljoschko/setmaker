@@ -82,7 +82,7 @@ export default function StepFive(props) {
                     data-track-id={item.id}
                     sx={{ display: "flex", justifyContent: "space-between" }}
                 >
-                    <Box sx={{ display: "flex" }}>
+                    <Box sx={{ display: "flex", alignItems: "center" }}>
                         <ListItemAvatar>
                             <Avatar
                                 alt={item.trackName}
@@ -94,8 +94,9 @@ export default function StepFive(props) {
                     <Box
                         sx={{
                             display: "flex",
-                            width: "100%",
+                            alignItems: "center",
                             justifyContent: "space-between",
+                            width: "50%",
                         }}
                     >
                         <Box sx={{ display: "flex" }}>
@@ -107,7 +108,7 @@ export default function StepFive(props) {
                                     .join(",")}
                             />
                         </Box>
-                        <Box sx={{ display: "flex" }}>
+                        <Box sx={{ display: "flex", width: "20%" }}>
                             <ListItemText primary={item.bpm} />
                             <ListItemText primary={item.camelot} />
                         </Box>
@@ -129,7 +130,7 @@ export default function StepFive(props) {
             <Box
                 sx={{
                     display: "flex",
-                    width: "600px",
+                    width: "800px",
                     my: 3,
                     flexDirection: "column",
                     alignItems: "center",
