@@ -1,6 +1,6 @@
-import { Box, Typography, Slider } from "@mui/material";
+import { Box, Typography, TextField } from "@mui/material";
 
-export default function NumberOfTracks(props) {
+export default function SetName(props) {
     return (
         <Box
             sx={{
@@ -12,22 +12,19 @@ export default function NumberOfTracks(props) {
                 mb: 2,
             }}
         >
-            <Typography>Number of Tracks</Typography>
+            <Typography>Set Name</Typography>
             <Box sx={{ display: "flex", width: 300 }}>
-                <Slider
-                    size="small"
-                    value={props.numberOfTracks}
-                    aria-label="Small"
-                    valueLabelDisplay="auto"
+                <TextField
+                    required
+                    id="standard-basic"
+                    variant="standard"
                     onChange={(e) =>
                         props.dispatch({
-                            type: "UPDATE_NUMBER_OF_TRACKS",
+                            type: "UPDATE_SET_NAME",
                             payload: e.target.value,
                         })
                     }
-                    min={1}
-                    step={1}
-                    max={40}
+                    value={props.setName}
                 />
             </Box>
         </Box>
