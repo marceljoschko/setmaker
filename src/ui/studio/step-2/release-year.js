@@ -19,7 +19,7 @@ export default function ReleaseYear(props) {
                 mb: 2,
             }}
         >
-            <Typography>BPM Range</Typography>
+            <Typography>Release Year</Typography>
             <Box sx={{ display: "flex", width: 300 }}>
                 <Slider
                     size="small"

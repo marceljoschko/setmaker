@@ -70,6 +70,7 @@ const Header = () => {
                             userImg={user.img}
                             expiresIn={expiresIn}
                             logout={logout}
+                            token={token}
                         />
                     </Box>
                 </Toolbar>

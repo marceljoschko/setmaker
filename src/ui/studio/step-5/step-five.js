@@ -10,6 +10,7 @@ import {
     List,
     TextField,
 } from "@mui/material";
+import "./styles.css";
 
 import DraggableList from "react-draggable-lists";
 
@@ -77,20 +78,40 @@ export default function StepFive(props) {
     const generate = (items) => {
         return items.map((item) =>
             cloneElement(
-                <ListItem data-track-id={item.id}>
-                    <ListItemAvatar>
-                        <Avatar alt={item.trackName} src={item.images[2].url} />
-                    </ListItemAvatar>
-                    <ListItemText primary={item.trackName} />
-                    <ListItemText
-                        primary={item.artists
-                            .map((artist) => {
-                                return artist.name;
-                            })
-                            .join(",")}
-                    />
-                    <ListItemText primary={item.bpm} />
-                    <ListItemText primary={item.camelot} />
+                <ListItem
+                    data-track-id={item.id}
+                    sx={{ display: "flex", justifyContent: "space-between" }}
+                >
+                    <Box sx={{ display: "flex" }}>
+                        <ListItemAvatar>
+                            <Avatar
+                                alt={item.trackName}
+                                src={item.images[2].url}
+                            />
+                        </ListItemAvatar>
+                        <ListItemText primary={item.trackName} />
+                    </Box>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            width: "100%",
+                            justifyContent: "space-between",
+                        }}
+                    >
+                        <Box sx={{ display: "flex" }}>
+                            <ListItemText
+                                primary={item.artists
+                                    .map((artist) => {
+                                        return artist.name;
+                                    })
+                                    .join(",")}
+                            />
+                        </Box>
+                        <Box sx={{ display: "flex" }}>
+                            <ListItemText primary={item.bpm} />
+                            <ListItemText primary={item.camelot} />
+                        </Box>
+                    </Box>
                 </ListItem>
             )
         );
@@ -144,13 +165,28 @@ export default function StepFive(props) {
                 </Box>
             </Box>
 
-            <Box sx={{ display: "flex" }}>
-                <List sx={{ display: "flex" }}>
+            <Box
+                sx={{
+                    display: "flex",
+                    justifyContent: "space-evenly",
+                    alignItems: "center",
+                    width: "100%",
+                }}
+            >
+                <List
+                    sx={{
+                        display: "flex",
+                        justifyContent: "space-evenly",
+                        alignItems: "center",
+                        width: "100%",
+                    }}
+                >
                     <DraggableList
                         ref={trackListRef}
                         width={800}
                         height={50}
                         rowSize={1}
+                        className="draggable-list"
                     >
                         {generate(sortedPlaylist)}
                     </DraggableList>

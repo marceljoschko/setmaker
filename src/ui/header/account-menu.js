@@ -16,7 +16,7 @@ export default function AccountMenu(props) {
     const calculateTimeLeft = () => {
         const expiresIn = window.localStorage.getItem("expires_in");
         let now = parseInt(Date.now() / 1000);
-        let diff = +expiresIn - +now;
+        let diff = Math.abs(expiresIn - now);
 
         return diff;
     };
@@ -35,6 +35,13 @@ export default function AccountMenu(props) {
     const handleClose = () => {
         setAnchorEl(null);
     };
+
+    const handleExpired = () => {
+        setTimeLeft(0);
+        props.logout();
+        return "Expired";
+    };
+
     return (
         <Fragment>
             <Box
@@ -44,7 +51,9 @@ export default function AccountMenu(props) {
                     textAlign: "center",
                 }}
             >
-                <Typography>{timeLeft ? timeLeft : props.logout()}</Typography>
+                <Typography>
+                    {timeLeft > 0 ? timeLeft : handleExpired()}
+                </Typography>
                 <Tooltip title="Account settings">
                     <IconButton
                         onClick={handleClick}
