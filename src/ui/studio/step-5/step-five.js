@@ -29,7 +29,35 @@ export default function StepFive(props) {
     const { sortedPlaylist, setName, user, token } = useStudioState();
     const trackListRef = useRef();
 
-    const getNewOrder = async () => {
+    // const getNewOrder = async () => {
+    //     let tracklist = document.querySelectorAll("[data-track-id]");
+
+    //     const tempOrder = {};
+
+    //     for (let i in tracklist) {
+    //         try {
+    //             let info = tracklist[i].parentElement.style.transform;
+    //             let first = info.slice(16);
+
+    //             let trackPosition =
+    //                 parseInt(first.substring(0, first.indexOf("p"))) / 50;
+
+    //             tempOrder[trackPosition] =
+    //                 tracklist[i].getAttribute("data-track-id");
+    //         } catch (e) {}
+    //     }
+    //     const newOrder = Object.keys(tempOrder);
+
+    //     const uris = [];
+
+    //     for (let i in tempOrder) {
+    //         uris.push("spotify:track:" + tempOrder[i]);
+    //     }
+
+    //     console.log(uris);
+    // };
+
+    const createPlaylist = async () => {
         let tracklist = document.querySelectorAll("[data-track-id]");
 
         const tempOrder = {};
@@ -48,31 +76,55 @@ export default function StepFive(props) {
         }
         const newOrder = Object.keys(tempOrder);
 
-        const uris = [];
+        const trackURIs = [];
 
         for (let i in tempOrder) {
-            uris.push("spotify:track:" + tempOrder[i]);
+            trackURIs.push("spotify:track:" + tempOrder[i]);
         }
+        try {
+            const response = await axios.post(
+                `https://api.spotify.com/v1/users/${user.id}/playlists`,
+                {
+                    name: `Techno`,
+                    description: `New playlist description`,
+                    public: false,
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
 
-        console.log(uris);
-
-        // const response = await axios.post(
-        //     `https://api.spotify.com/v1/users/${user.id}/playlists`,
-        //     {
-        //         headers: {
-        //             Authorization: `Bearer ${token}`,
-        //         },
-        //     }
-        // );
-
-        // const reponseTwo = await axios.get(
-        //     `https://api.spotify.com/v1/playlists/${playlist_id}/tracks`,
-        //     {
-        //         headers: {
-        //             Authorization: `Bearer ${token}`,
-        //         },
-        //     }
-        // );
+            await axios.post(
+                `https://api.spotify.com/v1/playlists/${response.data.id}/tracks`,
+                {
+                    uris: trackURIs,
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+        } catch (error) {
+            if (error.response) {
+                // The request was made and the server responded with a status code
+                // that falls out of the range of 2xx
+                console.log(error.response.data);
+                console.log(error.response.status);
+                console.log(error.response.headers);
+            } else if (error.request) {
+                // The request was made but no response was received
+                // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+                // http.ClientRequest in node.js
+                console.log(error.request);
+            } else {
+                // Something happened in setting up the request that triggered an Error
+                console.log("Error", error.message);
+            }
+            console.log(error.config);
+        }
     };
 
     const generate = (items) => {
@@ -124,7 +176,7 @@ export default function StepFive(props) {
         <StepContainer>
             <h1>Results</h1>
 
-            <Button variant="outlined" onClick={getNewOrder}>
+            <Button variant="outlined" onClick={createPlaylist}>
                 Create Playlist Spotify
             </Button>
             <Box
