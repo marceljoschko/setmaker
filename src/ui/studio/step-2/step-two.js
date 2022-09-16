@@ -7,13 +7,8 @@ import BpmRange from "./bpm-range";
 import ReleaseYear from "./release-year";
 
 export default function StepTwo(props) {
-    const {
-        numberOfTracks,
-        subGenresFirst,
-        subGenresSecond,
-        bpmRange,
-        releaseYear,
-    } = useStudioState();
+    const { numberOfTracks, subGenres, bpmRange, releaseYear } =
+        useStudioState();
     const dispatch = useDispatch();
 
     return (
@@ -33,11 +28,7 @@ export default function StepTwo(props) {
                         dispatch={dispatch}
                         numberOfTracks={numberOfTracks}
                     />
-                    <SubGenres
-                        dispatch={dispatch}
-                        subGenresFirst={subGenresFirst}
-                        subGenresSecond={subGenresSecond}
-                    />
+                    <SubGenres dispatch={dispatch} subGenres={subGenres} />
                     <BpmRange dispatch={dispatch} bpmRange={bpmRange} />
                     <ReleaseYear
                         dispatch={dispatch}

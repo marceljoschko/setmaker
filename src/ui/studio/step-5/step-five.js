@@ -29,34 +29,6 @@ export default function StepFive(props) {
     const { sortedPlaylist, setName, user, token } = useStudioState();
     const trackListRef = useRef();
 
-    // const getNewOrder = async () => {
-    //     let tracklist = document.querySelectorAll("[data-track-id]");
-
-    //     const tempOrder = {};
-
-    //     for (let i in tracklist) {
-    //         try {
-    //             let info = tracklist[i].parentElement.style.transform;
-    //             let first = info.slice(16);
-
-    //             let trackPosition =
-    //                 parseInt(first.substring(0, first.indexOf("p"))) / 50;
-
-    //             tempOrder[trackPosition] =
-    //                 tracklist[i].getAttribute("data-track-id");
-    //         } catch (e) {}
-    //     }
-    //     const newOrder = Object.keys(tempOrder);
-
-    //     const uris = [];
-
-    //     for (let i in tempOrder) {
-    //         uris.push("spotify:track:" + tempOrder[i]);
-    //     }
-
-    //     console.log(uris);
-    // };
-
     const createPlaylist = async () => {
         let tracklist = document.querySelectorAll("[data-track-id]");
 

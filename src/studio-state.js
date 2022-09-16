@@ -13,12 +13,11 @@ const initialState = () => ({
     importedTracks: {},
     sortedPlaylist: [],
     setName: "",
-    numberOfTracks: 10,
+    numberOfTracks: 20,
     emotionMatrix: [],
-    subGenresFirst: [],
-    subGenresSecond: [],
-    bpmRange: [130, 140],
-    releaseYear: [1990, 2010],
+    subGenres: "",
+    bpmRange: [140, 146],
+    releaseYear: [2016, 2022],
 });
 
 const reducer = (state, action) => {
@@ -53,14 +52,11 @@ const reducer = (state, action) => {
         case "UPDATE_NUMBER_OF_TRACKS":
             return { ...state, numberOfTracks: action.payload };
 
-        case "UPDATE_SUB_GENRES_FIRST":
-            return { ...state, subGenresFirst: action.payload };
+        case "UPDATE_SUB_GENRES":
+            return { ...state, subGenres: action.payload };
 
         case "UPDATE_EMOTION_MATRIX":
             return { ...state, emotionMatrix: action.payload };
-
-        case "UPDATE_SUB_GENRES_SECOND":
-            return { ...state, subGenresSecond: action.payload };
 
         case "UPDATE_BPM_RANGE":
             return { ...state, bpmRange: action.payload };

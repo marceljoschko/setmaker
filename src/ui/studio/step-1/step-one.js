@@ -77,7 +77,6 @@ export default function StepOne(props) {
     return <StepContainer>{body}</StepContainer>;
 }
 
-// The two large option buttons for "no audio" and "Microphone".
 const PlaylistSelection = ({ importPlaylist, startFromScratch }) => {
     return (
         <Fragment>
