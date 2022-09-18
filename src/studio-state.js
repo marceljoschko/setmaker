@@ -6,23 +6,49 @@ export const IMPORT_PLAYLIST = "import";
 const initialState = () => ({
     token: "",
     expiresIn: 0,
+    addTracks: false,
     expirationSet: false,
     user: { id: "", img: "", name: "" },
-    playlistChoice: "none",
+    playlistChoice: IMPORT_PLAYLIST,
     playlistId: "",
     importedTracks: {},
     sortedPlaylist: [],
     setName: "",
+    minNumberOfTracks: 0,
     numberOfTracks: 20,
-    emotionMatrix: [],
-    subGenres: "",
-    bpmRange: [140, 146],
-    releaseYear: [2016, 2022],
     trackData: {},
+    tempo: { min: 200, max: 0 },
+    energyPoints: [
+        {
+            x: 1,
+            y: 200,
+        },
+        {
+            x: 300,
+            y: 200,
+        },
+        {
+            x: 600,
+            y: 200,
+        },
+    ],
+    energyMap: [],
 });
 
 const reducer = (state, action) => {
     switch (action.type) {
+        case "UPDATE_ENERGY_MAP":
+            return { ...state, energyMap: action.payload };
+
+        case "UPDATE_ENERGY_POINTS":
+            return { ...state, energyPoints: action.payload };
+
+        case "UPDATE_TEMPO":
+            return { ...state, tempo: action.payload };
+
+        case "UPDATE_ADD_TRACKS":
+            return { ...state, addTracks: action.payload };
+
         case "UPDATE_TOKEN":
             return { ...state, token: action.payload };
 
@@ -53,20 +79,11 @@ const reducer = (state, action) => {
         case "UPDATE_NUMBER_OF_TRACKS":
             return { ...state, numberOfTracks: action.payload };
 
-        case "UPDATE_SUB_GENRES":
-            return { ...state, subGenres: action.payload };
-
-        case "UPDATE_EMOTION_MATRIX":
-            return { ...state, emotionMatrix: action.payload };
-
-        case "UPDATE_BPM_RANGE":
-            return { ...state, bpmRange: action.payload };
-
-        case "UPDATE_RELEASE_YEAR":
-            return { ...state, releaseYear: action.payload };
-
         case "UPDATE_TRACK_DATA":
             return { ...state, trackData: action.payload };
+
+        case "UPDATE_MIN_NUMBER_TRACKS":
+            return { ...state, minNumberOfTracks: action.payload };
 
         case "RESET":
             return initialState();

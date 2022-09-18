@@ -25,7 +25,7 @@ export default function NumberOfTracks(props) {
                             payload: e.target.value,
                         })
                     }
-                    min={1}
+                    min={props.min}
                     step={1}
                     max={40}
                 />

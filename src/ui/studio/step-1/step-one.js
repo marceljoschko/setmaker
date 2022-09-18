@@ -48,7 +48,17 @@ export default function StepOne(props) {
             };
         }
 
+        let numberLength = Object.keys(imported).length;
+
         dispatch({ type: "IMPORT_PLAYLIST_TRACKS", payload: imported });
+        dispatch({
+            type: "UPDATE_MIN_NUMBER_TRACKS",
+            payload: numberLength,
+        });
+        dispatch({
+            type: "UPDATE_NUMBER_OF_TRACKS",
+            payload: numberLength,
+        });
         props.nextStep();
     };
 
@@ -147,8 +157,6 @@ const ImportPlaylist = ({ reselectSource, startImport, useDispatch }) => {
                     Import
                 </Button>
             </Box>
-
-            <ActionButtons prev={{ onClick: reselectSource }} />
         </Fragment>
     );
 };

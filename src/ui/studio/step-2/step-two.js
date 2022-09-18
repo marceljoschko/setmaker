@@ -1,13 +1,10 @@
 import { useStudioState, useDispatch } from "../../../studio-state";
 import { ActionButtons, StepContainer } from "../elements";
-import { Box, FormControl } from "@mui/material";
+import { Box, FormControl, Typography, Switch } from "@mui/material";
 import NumberOfTracks from "./number-of-tracks";
-import SubGenres from "./sub-genres";
-import BpmRange from "./bpm-range";
-import ReleaseYear from "./release-year";
 
 export default function StepTwo(props) {
-    const { numberOfTracks, subGenres, bpmRange, releaseYear } =
+    const { numberOfTracks, importedTracks, minNumberOfTracks, addTracks } =
         useStudioState();
     const dispatch = useDispatch();
 
@@ -24,15 +21,14 @@ export default function StepTwo(props) {
                         width: "500px",
                     }}
                 >
+                    <Typography>
+                        Imported {Object.keys(importedTracks).length} Tracks
+                    </Typography>
+
                     <NumberOfTracks
                         dispatch={dispatch}
+                        min={minNumberOfTracks}
                         numberOfTracks={numberOfTracks}
-                    />
-                    <SubGenres dispatch={dispatch} subGenres={subGenres} />
-                    <BpmRange dispatch={dispatch} bpmRange={bpmRange} />
-                    <ReleaseYear
-                        dispatch={dispatch}
-                        releaseYear={releaseYear}
                     />
                 </Box>
                 <ActionButtons
