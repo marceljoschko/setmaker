@@ -18,6 +18,7 @@ const initialState = () => ({
     subGenres: "",
     bpmRange: [140, 146],
     releaseYear: [2016, 2022],
+    trackData: {},
 });
 
 const reducer = (state, action) => {
@@ -63,6 +64,9 @@ const reducer = (state, action) => {
 
         case "UPDATE_RELEASE_YEAR":
             return { ...state, releaseYear: action.payload };
+
+        case "UPDATE_TRACK_DATA":
+            return { ...state, trackData: action.payload };
 
         case "RESET":
             return initialState();

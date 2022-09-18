@@ -5,6 +5,7 @@ import { findCamelotKey } from "../../../util";
 import axios from "axios";
 import { shuffle } from "d3";
 import { flow } from "lodash";
+import { camelotWheel } from "../../../camelot_wheel";
 
 export default function StepFour(props) {
     const {
@@ -73,6 +74,7 @@ export default function StepFour(props) {
 
     const trackData = {};
     let possibleTracks = [];
+    let sortedTracks = [];
 
     const getSelected = (selected) => {
         const result = [];
@@ -160,7 +162,6 @@ export default function StepFour(props) {
                     delete trackData[temp.id];
                     continue;
                 }
-
                 trackData[temp.id] = {
                     ...trackData[temp.id],
                     energy: temp.energy,
@@ -178,7 +179,10 @@ export default function StepFour(props) {
         // shuffle the possible tracks
         possibleTracks = shuffle(Object.keys(trackData));
 
-        const nTwo = Math.pow(numberOfTracks);
+        const nTwo =
+            possibleTracks.length > Math.pow(numberOfTracks)
+                ? Math.pow(numberOfTracks)
+                : possibleTracks.length;
 
         // take the first n^2 tracks where n is the number of tracks
         possibleTracks =
@@ -197,26 +201,99 @@ export default function StepFour(props) {
             nTwo / 2 - numberOfTracks / 2,
             nTwo / 2 + numberOfTracks / 2
         );
+
         shuffle(baseline);
-        sortedPlaylist.push(baseline[0]);
+        sortedTracks.push(baseline[0]);
 
         //unshift push pop shift
 
-        while (sortedPlaylist.length < numberOfTracks) {
-            let temp = sortedPlaylist[0];
+        while (sortedTracks.length < numberOfTracks) {
+            findCamelotNeighbor(sortedTracks[0]);
         }
+
+        let analyzedData = {};
+
+        // get images etc from new sortedTracks
+
+        let ids = sortedTracks.join(",");
+
+        const response = await axios.get(`https://api.spotify.com/v1/tracks`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+            params: {
+                ids: ids,
+            },
+        });
+
+        const tracks = response.data.tracks;
+
+        for (let i in sortedTracks) {
+            analyzedData[sortedTracks[i]] = trackData[sortedTracks[i]];
+
+            let temp = tracks[i];
+
+            analyzedData[sortedTracks[i]] = {
+                ...analyzedData[sortedTracks[i]],
+                popularity: temp.popularity,
+                releaseDate: temp.album.release_date,
+                images: temp.album.images,
+                trackName: temp.name,
+                artists: temp.album.artists,
+            };
+        }
+
+        dispatch({
+            type: "UPDATE_SORTED_PLAYLIST",
+            payload: sortedTracks,
+        });
+
+        dispatch({
+            type: "UPDATE_TRACK_DATA",
+            payload: analyzedData,
+        });
+        props.nextStep();
     };
 
     const findCamelotNeighbor = (track) => {
-        const trackKey = trackData[track].key;
+        let objKey = camelotWheel.getKeyNotationObjectCamelot(
+            trackData[track].camelot
+        );
 
-        const neighbors = flow([
+        const possibleKeys = [];
+
+        possibleKeys.push(
+            camelotWheel.getKeyNotationFlat(camelotWheel.energyBoost(objKey))
+        );
+        possibleKeys.push(
+            camelotWheel.getKeyNotationFlat(camelotWheel.energyDrop(objKey))
+        );
+        possibleKeys.push(
+            camelotWheel.getKeyNotationFlat(camelotWheel.energyRaise(objKey))
+        );
+        possibleKeys.push(
+            camelotWheel.getKeyNotationFlat(camelotWheel.energySwitch(objKey))
+        );
+        possibleKeys.push(
+            camelotWheel.getKeyNotationFlat(camelotWheel.perfectMatch(objKey))
+        );
+
+        let neighbors = flow([
             Object.entries,
-            (arr) => arr.filter(([key, value]) => {}),
+            (arr) =>
+                arr.filter(([key, value]) => {
+                    if (possibleKeys.includes(value.camelot)) {
+                        if (!sortedTracks.includes(key)) {
+                            return value;
+                        }
+                    }
+                }),
             Object.fromEntries,
         ])(trackData);
+        let neighborsArr = Object.keys(neighbors);
+        shuffle(neighborsArr);
 
-        console.log(neighbors);
+        sortedTracks.unshift(neighborsArr[0]);
     };
 
     const createSet = () => {

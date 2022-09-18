@@ -26,7 +26,8 @@ import SetName from "./set-name";
 
 export default function StepFive(props) {
     const dispatch = useDispatch();
-    const { sortedPlaylist, setName, user, token } = useStudioState();
+    const { sortedPlaylist, setName, user, token, trackData } =
+        useStudioState();
     const trackListRef = useRef();
 
     const createPlaylist = async () => {
@@ -103,17 +104,17 @@ export default function StepFive(props) {
         return items.map((item) =>
             cloneElement(
                 <ListItem
-                    data-track-id={item.id}
+                    data-track-id={item}
                     sx={{ display: "flex", justifyContent: "space-between" }}
                 >
                     <Box sx={{ display: "flex", alignItems: "center" }}>
                         <ListItemAvatar>
                             <Avatar
-                                alt={item.trackName}
-                                src={item.images[2].url}
+                                alt={trackData[item].trackName}
+                                src={trackData[item].images[2].url}
                             />
                         </ListItemAvatar>
-                        <ListItemText primary={item.trackName} />
+                        <ListItemText primary={trackData[item].trackName} />
                     </Box>
                     <Box
                         sx={{
@@ -125,7 +126,7 @@ export default function StepFive(props) {
                     >
                         <Box sx={{ display: "flex" }}>
                             <ListItemText
-                                primary={item.artists
+                                primary={trackData[item].artists
                                     .map((artist) => {
                                         return artist.name;
                                     })
@@ -133,8 +134,8 @@ export default function StepFive(props) {
                             />
                         </Box>
                         <Box sx={{ display: "flex", width: "20%" }}>
-                            <ListItemText primary={item.bpm} />
-                            <ListItemText primary={item.camelot} />
+                            <ListItemText primary={trackData[item].bpm} />
+                            <ListItemText primary={trackData[item].camelot} />
                         </Box>
                     </Box>
                 </ListItem>
