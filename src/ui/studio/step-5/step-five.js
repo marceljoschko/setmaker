@@ -1,5 +1,5 @@
 import { ActionButtons, StepContainer } from "../elements";
-import { cloneElement } from "react";
+import { cloneElement, useEffect } from "react";
 import {
     Button,
     Box,
@@ -13,9 +13,9 @@ import {
 import "./styles.css";
 
 import DraggableList from "react-draggable-lists";
+import { getCurrentDate } from "../../../util";
 
 import { useStudioState, useDispatch } from "../../../studio-state";
-import { getCurrentDate } from "../../../util";
 
 import { useRef } from "react";
 
@@ -23,12 +23,14 @@ import axios from "axios";
 
 import UploadAndDisplayImage from "./upload-image";
 import SetName from "./set-name";
+import SetDescription from "./set-description";
 
 export default function StepFive(props) {
     const dispatch = useDispatch();
-    const { sortedPlaylist, setName, user, token, trackData } =
+    const { sortedPlaylist, setName, setDescription, user, token, trackData } =
         useStudioState();
     const trackListRef = useRef();
+    //let defaultText = "Techno Set created at " + getCurrentDate();
 
     const createPlaylist = async () => {
         let tracklist = document.querySelectorAll("[data-track-id]");
@@ -58,8 +60,8 @@ export default function StepFive(props) {
             const response = await axios.post(
                 `https://api.spotify.com/v1/users/${user.id}/playlists`,
                 {
-                    name: `Techno`,
-                    description: `New playlist description`,
+                    name: setName,
+                    description: setDescription,
                     public: false,
                 },
                 {
@@ -105,7 +107,10 @@ export default function StepFive(props) {
             cloneElement(
                 <ListItem
                     data-track-id={item}
-                    sx={{ display: "flex", justifyContent: "space-between" }}
+                    sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                    }}
                 >
                     <Box sx={{ display: "flex", alignItems: "center" }}>
                         <ListItemAvatar>
@@ -143,8 +148,6 @@ export default function StepFive(props) {
         );
     };
 
-    let defaultText = "Test";
-
     return (
         <StepContainer>
             <h1>Results</h1>
@@ -176,17 +179,12 @@ export default function StepFive(props) {
                     <Avatar
                         sx={{ width: 125, height: 125 }}
                         variant="square"
-                        alt="Remy Sharp"
-                        src="/broken-image.jpg"
+                        alt="Techno"
+                        src=""
                     />
-
-                    <TextField
-                        sx={{ flex: "1 0 auto", ml: 5 }}
-                        id="outlined-multiline-static"
-                        label="Description"
-                        multiline
-                        rows={4}
-                        defaultValue={defaultText}
+                    <SetDescription
+                        dispatch={dispatch}
+                        setDescription={setDescription}
                     />
                 </Box>
             </Box>

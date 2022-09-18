@@ -68,6 +68,12 @@ export const getCurrentDate = () => {
         "-" +
         (today.getMonth() + 1) +
         "-" +
-        today.getDate()
+        today.getDate() +
+        " " +
+        today.getHours() +
+        ":" +
+        today.getMinutes() +
+        ":" +
+        today.getSeconds()
     );
 };

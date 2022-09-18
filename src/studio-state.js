@@ -14,10 +14,12 @@ const initialState = () => ({
     importedTracks: {},
     sortedPlaylist: [],
     setName: "",
+    setDescription: "",
     minNumberOfTracks: 0,
     numberOfTracks: 20,
     trackData: {},
-    tempo: { min: 200, max: 0 },
+    maxTempo: 0,
+    minTempo: 0,
     energyPoints: [
         {
             x: 1,
@@ -33,18 +35,25 @@ const initialState = () => ({
         },
     ],
     energyMap: [],
+    progressBar: 0,
 });
 
 const reducer = (state, action) => {
     switch (action.type) {
+        case "UPDATE_PROGRESS_BAR":
+            return { ...state, progressBar: action.payload };
+
         case "UPDATE_ENERGY_MAP":
             return { ...state, energyMap: action.payload };
 
         case "UPDATE_ENERGY_POINTS":
             return { ...state, energyPoints: action.payload };
 
-        case "UPDATE_TEMPO":
-            return { ...state, tempo: action.payload };
+        case "UPDATE_MIN_TEMPO":
+            return { ...state, minTempo: action.payload };
+
+        case "UPDATE_MAX_TEMPO":
+            return { ...state, maxTempo: action.payload };
 
         case "UPDATE_ADD_TRACKS":
             return { ...state, addTracks: action.payload };
@@ -75,6 +84,9 @@ const reducer = (state, action) => {
 
         case "UPDATE_SET_NAME":
             return { ...state, setName: action.payload };
+
+        case "UPDATE_SET_DESCRIPTION":
+            return { ...state, setDescription: action.payload };
 
         case "UPDATE_NUMBER_OF_TRACKS":
             return { ...state, numberOfTracks: action.payload };

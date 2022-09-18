@@ -123,7 +123,7 @@ export default function StepThree(props) {
             energyMap.push((valueAt(x) / 400).toFixed(2));
             x += 600 / (numberOfTracks - 1);
         }
-        console.log(energyMap);
+
         dispatch({ type: "UPDATE_ENERGY_MAP", payload: energyMap });
     };
 
