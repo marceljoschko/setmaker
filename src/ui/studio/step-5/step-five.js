@@ -23,14 +23,13 @@ import axios from "axios";
 
 import UploadAndDisplayImage from "./upload-image";
 import SetName from "./set-name";
-import SetDescription from "./set-description";
 
 export default function StepFive(props) {
     const dispatch = useDispatch();
     const { sortedPlaylist, setName, setDescription, user, token, trackData } =
         useStudioState();
     const trackListRef = useRef();
-    //let defaultText = "Techno Set created at " + getCurrentDate();
+    let defaultText = "Techno Set created at " + getCurrentDate();
 
     const createPlaylist = async () => {
         let tracklist = document.querySelectorAll("[data-track-id]");
@@ -182,9 +181,13 @@ export default function StepFive(props) {
                         alt="Techno"
                         src=""
                     />
-                    <SetDescription
-                        dispatch={dispatch}
-                        setDescription={setDescription}
+                    <TextField
+                        sx={{ flex: "1 0 auto", ml: 5 }}
+                        id="outlined-multiline-static"
+                        label="Description"
+                        multiline
+                        rows={4}
+                        defaultValue={defaultText}
                     />
                 </Box>
             </Box>

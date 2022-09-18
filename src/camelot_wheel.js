@@ -11,6 +11,70 @@
     return reference;
 };
 
+export const createHarmonicMixingPattern = (playlistLength) => {
+    // Instead of predefining a mixing pattern, create one randomly each time, with predefined proportions
+    // TODO: randomize proportions a bit and use perfectMatch as default for the rest
+    const movements = {
+        perfectMatch: 35, // perfectMatch (=)
+        energyBoost: 10, // energyBoost (+1)
+        energyDrop: 10, // energyDrop (-1)
+        energySwitch: 10, // energySwitch (B/A)
+        moodBoost: 5, // moodBoost (+3)
+        moodDrop: 5, // moodDrop (-3)
+        energyRaise: 5, // energyRaise (+7)
+        domKey: 10, // domKey (+1 & B/A) = energyBoost & energySwitch
+        subDomKey: 10, // subDomKey (-1 & B/A) = energyDrop & energySwitch
+    }; // Sum must be 100%
+    let pattern = [];
+    Object.keys(movements).forEach((key) => {
+        pattern = pattern.concat(
+            Array(Math.ceil((playlistLength * movements[key]) / 100)).fill(key)
+        );
+    });
+    // Sort randomly
+    let last = pattern.length;
+    let n;
+    while (last > 0) {
+        n = Math.floor(Math.random() * last);
+        --last;
+        [pattern[n], pattern[last]] = [pattern[last], pattern[n]];
+    }
+
+    // Cut to desired length and output
+    if (pattern.length > playlistLength) {
+        pattern.length = playlistLength;
+    } // finalPlaylistLength is always <= PlaylistLength
+    return pattern;
+};
+
+export const applyPattern = (key, pattern, bReturnObj = true) => {
+    // Works with both Camelot and Open Keys objects
+    let keyArr = [];
+    if (Array.isArray(pattern) && pattern.length && camelotWheel.hasKey(key)) {
+        if (typeof key === "string") {
+            keyArr.push(camelotWheel.getKeyNotationObjectCamelot(key));
+        } else if (
+            typeof key === "object" &&
+            key.hasOwnProperty("hour") &&
+            key.hasOwnProperty("letter")
+        ) {
+            keyArr.push(key);
+        } else {
+            return keyArr;
+        }
+
+        pattern.forEach((movement, index) => {
+            keyArr.push(camelotWheel[movement]({ ...keyArr[index] }));
+        });
+        if (!bReturnObj) {
+            keyArr = keyArr.map((keyObj) => {
+                return camelotWheel.getKeyNotationCamelot(keyObj);
+            });
+        } // Translate back
+    }
+    return keyArr;
+};
+
 export const camelotWheel = {
     // Use methods at bottom to get a copy of the objects and not just a reference to the originals
     wheelNotationFlat: new Map([

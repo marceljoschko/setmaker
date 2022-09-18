@@ -2,14 +2,19 @@ import { ActionButtons, StepContainer } from "../elements";
 import { Button } from "@mui/material";
 import React from "react";
 import { useStudioState, useDispatch } from "../../../studio-state";
-import { findCamelotKey } from "../../../util";
+import { findCamelotKey, findFlatKey } from "../../../util";
 import axios from "axios";
 import { shuffle } from "d3";
 import { flow } from "lodash";
-import { camelotWheel } from "../../../camelot_wheel";
+import {
+    camelotWheel,
+    createHarmonicMixingPattern,
+    applyPattern,
+} from "../../../camelot_wheel";
 
 export default function StepFour(props) {
-    const { token, importedTracks, numberOfTracks } = useStudioState();
+    const { token, importedTracks, numberOfTracks, energyMap } =
+        useStudioState();
     const dispatch = useDispatch();
 
     let trackData = {};
@@ -50,6 +55,7 @@ export default function StepFour(props) {
                 mode: temp.mode,
                 bpm: bpmTempo,
                 camelot: findCamelotKey(temp.key, temp.mode),
+                flat: findFlatKey(temp.key, temp.mode),
             };
         }
     };
@@ -72,7 +78,6 @@ export default function StepFour(props) {
                 },
             }
         );
-        const payload = {};
         const audio_features = features.data.audio_features;
         for (let i in audio_features) {
             let temp = audio_features[i];
@@ -91,6 +96,7 @@ export default function StepFour(props) {
                 mode: temp.mode,
                 bpm: bpmTempo,
                 camelot: findCamelotKey(temp.key, temp.mode),
+                flat: findFlatKey(temp.key, temp.mode),
             };
         }
     };
@@ -99,6 +105,11 @@ export default function StepFour(props) {
         const tracks = Object.keys(importedTracks);
 
         for (let i in tracks) {
+            const artists = importedTracks[tracks[i]].artists
+                .map((artist) => {
+                    return artist.id;
+                })
+                .join(",");
             const response = await axios.get(
                 "https://api.spotify.com/v1/recommendations",
                 {
@@ -106,16 +117,12 @@ export default function StepFour(props) {
                         Authorization: `Bearer ${token}`,
                     },
                     params: {
-                        seed_artists: importedTracks[tracks[i]].artists
-                            .map((artist) => {
-                                return artist.id;
-                            })
-                            .join(","),
-                        seed_genres: "techno",
+                        seed_artists: artists,
+                        seed_genres: "Raw Techno",
                         seed_tracks: tracks[i],
                         limit: 100,
-                        min_tempo: tempMin - 5,
-                        max_tempo: tempMax + 5,
+                        min_tempo: tempMin,
+                        max_tempo: tempMax,
                     },
                 }
             );
@@ -129,18 +136,63 @@ export default function StepFour(props) {
 
         let mainTracks = Object.keys(importedTracks);
 
-        shuffle(fillTracks);
-        let randomTracks = mainTracks;
-        if (numberOfTracks - mainTracks.length > 0) {
-            randomTracks = mainTracks.concat(
-                fillTracks.slice(0, numberOfTracks - mainTracks.length - 1)
-            );
+        let sortedTracks = new Array(numberOfTracks).fill("");
+
+        let trackCount = 0;
+
+        let pattern = createHarmonicMixingPattern(numberOfTracks);
+        let keyArr = applyPattern(trackData[mainTracks[0]].flat, pattern);
+        let camArr = keyArr.map((key) => key.hour + key.letter);
+        console.log(camArr);
+        // try to place main tracks based of pattern
+
+        for (let i in mainTracks) {
+            let tempKey = trackData[mainTracks[i]].camelot;
+
+            if (camArr.indexOf(tempKey) > -1) {
+                let pos = camArr.indexOf(tempKey);
+
+                sortedTracks[pos] = mainTracks[i];
+                camArr[pos] = "XX";
+                trackCount++;
+            } else {
+                const index = mainTracks.indexOf(mainTracks[i]);
+                if (index > -1) {
+                    mainTracks.splice(index, 1);
+                }
+            }
         }
-        shuffle(randomTracks);
 
-        //check if finish lol?
+        shuffle(fillTracks);
+        console.log(trackData);
 
-        dispatch({ type: "UPDATE_SORTED_PLAYLIST", payload: randomTracks });
+        for (let i = 0; i < numberOfTracks; i++) {
+            if (sortedTracks[i]) {
+                continue;
+            }
+
+            let neighbors = flow([
+                Object.entries,
+                (arr) =>
+                    arr.filter(([key, value]) => {
+                        if (value.camelot === camArr[i]) {
+                            return value;
+                        }
+                    }),
+                Object.fromEntries,
+            ])(trackData);
+
+            let neighborsArr = Object.keys(neighbors);
+
+            shuffle(neighborsArr);
+
+            while (sortedTracks.includes(neighborsArr[0])) {
+                shuffle(neighborsArr);
+            }
+            sortedTracks[i] = neighborsArr[0];
+        }
+
+        dispatch({ type: "UPDATE_SORTED_PLAYLIST", payload: sortedTracks });
     };
 
     const createSet = async () => {
