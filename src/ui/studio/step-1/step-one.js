@@ -102,7 +102,6 @@ export default function StepOne(props) {
                 >
                     <TextField
                         sx={{ minWidth: "250px" }}
-                        id="standard-basic"
                         label="Playlist ID"
                         variant="standard"
                         error={playlistIdError}

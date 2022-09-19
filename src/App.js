@@ -8,7 +8,7 @@ import SpotifyLogin from "./spotify-login";
 
 const App = () => {
     const dispatch = useDispatch();
-    const { token, expiresIn, expirationSet } = useStudioState();
+    const { token } = useStudioState();
     const [activeStep, updateActiveStep] = useState(0);
 
     useEffect(() => {

@@ -2,9 +2,7 @@ import { createContext, useContext, useReducer } from "react";
 
 const initialState = () => ({
     token: "",
-    expiresIn: 0,
     addTracks: false,
-    expirationSet: false,
     user: { id: "", img: "", name: "" },
     playlistId: "",
     playlistIdError: false,
@@ -46,23 +44,11 @@ const reducer = (state, action) => {
         case "UPDATE_ENERGY_POINTS":
             return { ...state, energyPoints: action.payload };
 
-        case "UPDATE_MIN_TEMPO":
-            return { ...state, minTempo: action.payload };
-
-        case "UPDATE_MAX_TEMPO":
-            return { ...state, maxTempo: action.payload };
-
         case "UPDATE_ADD_TRACKS":
             return { ...state, addTracks: action.payload };
 
         case "UPDATE_TOKEN":
             return { ...state, token: action.payload };
-
-        case "UPDATE_EXPIRATION":
-            return { ...state, expiresIn: action.payload };
-
-        case "UPDATE_EXPIRATION_SET":
-            return { ...state, expirationSet: action.payload };
 
         case "UPDATE_USER":
             return { ...state, user: action.payload };

@@ -98,6 +98,7 @@ export default function StepFive(props) {
             }
             console.log(error.config);
         }
+        props.nextStep();
     };
 
     const generate = (items) => {

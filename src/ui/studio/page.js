@@ -1,5 +1,3 @@
-import React from "react";
-
 import Steps from "./steps";
 
 import StepOne from "./step-1/step-one";

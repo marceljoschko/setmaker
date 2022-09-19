@@ -26,7 +26,7 @@ export const StepContainer = ({ children }) => (
     </Box>
 );
 
-export function ActionButtons({ prev = null, next = null, children }) {
+export const ActionButtons = ({ prev = null, next = null }) => {
     return (
         <Paper sx={{ position: "fixed", bottom: 0, left: 0, right: 0 }}>
             <BottomNavigation
@@ -38,13 +38,9 @@ export function ActionButtons({ prev = null, next = null, children }) {
                         <Button
                             sx={{
                                 whiteSpace: "nowrap",
-                                ...(prev.danger === true
-                                    ? { variant: "buttons.danger" }
-                                    : { variant: "buttons.text" }),
                             }}
                             onClick={prev.onClick}
                             disabled={prev.disabled}
-                            danger={prev.danger || false}
                             title="Back"
                         >
                             <FontAwesomeIcon icon={faCaretLeft} />
@@ -52,16 +48,13 @@ export function ActionButtons({ prev = null, next = null, children }) {
                         </Button>
                     )}
                 </Box>
-                <Box>{children}</Box>
+
                 <Box sx={{ flex: "1 1 0", textAlign: "right" }}>
                     {next && (
                         <Button
                             sx={{
                                 whiteSpace: "nowrap",
                                 "& svg": { mr: 0, ml: 2 },
-                                ...(next.danger === true
-                                    ? { variant: "buttons.danger" }
-                                    : {}),
                             }}
                             onClick={next.onClick}
                             disabled={next.disabled}
@@ -74,14 +67,5 @@ export function ActionButtons({ prev = null, next = null, children }) {
                 </Box>
             </BottomNavigation>
         </Paper>
-    );
-}
-
-export const OptionButton = ({ children, label, onClick }) => {
-    return (
-        <Button variant="outlined" onClick={onClick} title={label}>
-            <div sx={{ fontSize: 4 }}>{label}</div>
-            {children}
-        </Button>
     );
 };
