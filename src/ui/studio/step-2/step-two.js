@@ -1,10 +1,10 @@
 import { useStudioState, useDispatch } from "../../../studio-state";
 import { ActionButtons, StepContainer } from "../elements";
-import { Box, FormControl, Typography, Switch } from "@mui/material";
+import { Box, FormControl, Typography } from "@mui/material";
 import NumberOfTracks from "./number-of-tracks";
 
 export default function StepTwo(props) {
-    const { numberOfTracks, importedTracks, minNumberOfTracks, addTracks } =
+    const { numberOfTracks, importedTracks, minNumberOfTracks } =
         useStudioState();
     const dispatch = useDispatch();
 
@@ -19,12 +19,18 @@ export default function StepTwo(props) {
                         justifyContent: "center",
                         flexDirection: "column",
                         width: "500px",
+                        mb: 3,
                     }}
                 >
                     <Typography>
                         Imported {Object.keys(importedTracks).length} Tracks
                     </Typography>
-
+                    <Box
+                        sx={{
+                            display: "flex",
+                            mb: 3,
+                        }}
+                    ></Box>
                     <NumberOfTracks
                         dispatch={dispatch}
                         min={minNumberOfTracks}

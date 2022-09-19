@@ -48,7 +48,7 @@ const Header = () => {
                         component="a"
                         href="/"
                         sx={{
-                            display: { xs: "none", md: "flex" },
+                            display: { md: "flex" },
                             fontFamily: "monospace",
                             fontWeight: 700,
                             letterSpacing: ".3rem",
@@ -61,7 +61,7 @@ const Header = () => {
                     <Box
                         sx={{
                             flexGrow: 1,
-                            display: { xs: "none", md: "flex" },
+                            display: { md: "flex" },
                         }}
                     />
                     <Box sx={{ flexGrow: 0 }}>

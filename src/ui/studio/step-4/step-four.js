@@ -268,6 +268,7 @@ export default function StepFour(props) {
 
     return (
         <StepContainer>
+            <h1>Sort and Find Tracks</h1>
             <Button variant="outlined" onClick={createSet}>
                 Create Set
             </Button>
