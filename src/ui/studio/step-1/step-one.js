@@ -1,13 +1,15 @@
 import { StepContainer } from "../elements";
-import { Box, TextField, Button } from "@mui/material";
+import { Box, TextField, Button, LinearProgress } from "@mui/material";
 import { Fragment } from "react";
 import { useStudioState, useDispatch } from "../../../studio-state";
 
 import axios from "axios";
+import { shuffle } from "d3";
 
 export default function StepOne(props) {
     const dispatch = useDispatch();
-    const { token, playlistId, playlistIdError } = useStudioState();
+    const { token, playlistId, playlistIdError, startedImportProcess } =
+        useStudioState();
 
     const onlyLettersAndNumbers = (str) => {
         return /^[A-Za-z0-9]*$/.test(str);
@@ -43,6 +45,7 @@ export default function StepOne(props) {
     };
 
     const startImport = async (parsedPlaylistId) => {
+        dispatch({ type: "UPDATE_STARTED_IMPORT_PROCESS", payload: true });
         const response = await axios.get(
             `https://api.spotify.com/v1/playlists/${parsedPlaylistId}`,
             {
@@ -52,7 +55,12 @@ export default function StepOne(props) {
             }
         );
         const imported = {};
-        const tracks = response.data.tracks.items;
+        let tracks = response.data.tracks.items;
+
+        if (tracks.length > 20) {
+            shuffle(tracks);
+            tracks = tracks.slice(0, 20);
+        }
 
         for (let i in tracks) {
             let temp = tracks[i].track;
@@ -81,6 +89,7 @@ export default function StepOne(props) {
             type: "UPDATE_PLAYLIST_ID",
             payload: parsedPlaylistId,
         });
+        dispatch({ type: "UPDATE_STARTED_IMPORT_PROCESS", payload: false });
         props.nextStep();
     };
 
@@ -123,9 +132,20 @@ export default function StepOne(props) {
                             display: { xs: "none", md: "flex" },
                         }}
                     />
-                    <Button variant="outlined" onClick={inputCheck}>
+                    <Button
+                        sx={{ mb: 7 }}
+                        variant="outlined"
+                        onClick={inputCheck}
+                    >
                         Import
                     </Button>
+                    {startedImportProcess ? (
+                        <Box sx={{ width: 800 }}>
+                            <LinearProgress />
+                        </Box>
+                    ) : (
+                        <Box></Box>
+                    )}
                 </Box>
             </Fragment>
         </StepContainer>

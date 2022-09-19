@@ -4,7 +4,6 @@ import { useStudioState, useDispatch } from "../../../studio-state";
 import { useEffect, useRef } from "react";
 import { Chart, registerables } from "chart.js";
 import "chartjs-plugin-dragdata";
-import { dispatch } from "d3";
 Chart.register(...registerables);
 
 export default function StepThree(props) {

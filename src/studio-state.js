@@ -7,6 +7,8 @@ const initialState = () => ({
     playlistId: "",
     newPlaylistId: "",
     playlistIdError: false,
+    startedImportProcess: false,
+    startedProcess: false,
     importedTracks: {},
     sortedPlaylist: [],
     setName: "",
@@ -14,7 +16,6 @@ const initialState = () => ({
     minNumberOfTracks: 0,
     numberOfTracks: 20,
     trackData: {},
-    energyFeature: false,
     maxTempo: 0,
     minTempo: 0,
     energyPoints: [
@@ -39,6 +40,12 @@ const reducer = (state, action) => {
     switch (action.type) {
         case "UPDATE_PROGRESS_BAR":
             return { ...state, progressBar: action.payload };
+
+        case "UPDATE_STARTED_PROCESS":
+            return { ...state, startedProcess: action.payload };
+
+        case "UPDATE_STARTED_IMPORT_PROCESS":
+            return { ...state, startedImportProcess: action.payload };
 
         case "UPDATE_ENERGY_MAP":
             return { ...state, energyMap: action.payload };

@@ -83,18 +83,12 @@ export default function StepFive(props) {
             );
         } catch (error) {
             if (error.response) {
-                // The request was made and the server responded with a status code
-                // that falls out of the range of 2xx
                 console.log(error.response.data);
                 console.log(error.response.status);
                 console.log(error.response.headers);
             } else if (error.request) {
-                // The request was made but no response was received
-                // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-                // http.ClientRequest in node.js
                 console.log(error.request);
             } else {
-                // Something happened in setting up the request that triggered an Error
                 console.log("Error", error.message);
             }
             console.log(error.config);
@@ -104,6 +98,12 @@ export default function StepFive(props) {
             payload: createdPlaylistId,
         });
         props.nextStep();
+    };
+
+    const inputCheck = () => {
+        if (setName) {
+            createPlaylist();
+        }
     };
 
     const generate = (items) => {
@@ -157,7 +157,7 @@ export default function StepFive(props) {
         <StepContainer>
             <h1>Results</h1>
 
-            <Button variant="outlined" onClick={createPlaylist}>
+            <Button variant="outlined" onClick={inputCheck}>
                 Create Playlist Spotify
             </Button>
             <Box
@@ -169,9 +169,19 @@ export default function StepFive(props) {
                     alignItems: "center",
                 }}
             >
-                <Box>
+                <Box
+                    sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flexDirection: "column",
+                        width: "400px",
+                        mb: 2,
+                    }}
+                >
                     <SetName dispatch={dispatch} setName={setName} />
                 </Box>
+
                 <Box
                     sx={{
                         display: "flex",

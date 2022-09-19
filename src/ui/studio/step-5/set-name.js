@@ -16,6 +16,7 @@ export default function SetName(props) {
             <Box sx={{ display: "flex", width: 300 }}>
                 <TextField
                     required
+                    sx={{ display: "flex", width: "100%" }}
                     id="standard-basic"
                     variant="standard"
                     onChange={(e) =>
@@ -25,6 +26,10 @@ export default function SetName(props) {
                         })
                     }
                     value={props.setName}
+                    error={props.setName === "" ? true : false}
+                    helperText={
+                        props.setName === "" ? "Setname is empty!" : " "
+                    }
                 />
             </Box>
         </Box>
