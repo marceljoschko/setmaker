@@ -48,11 +48,12 @@ export default function StepFive(props) {
                     tracklist[i].getAttribute("data-track-id");
             } catch (e) {}
         }
-        const newOrder = Object.keys(tempOrder);
+
         const trackURIs = [];
+        let createdPlaylistId = "";
 
         for (let i in tempOrder) {
-            trackURIs.push("spotify:track:" + newOrder[i]);
+            trackURIs.push("spotify:track:" + tempOrder[i]);
         }
         try {
             const response = await axios.post(
@@ -68,9 +69,9 @@ export default function StepFive(props) {
                     },
                 }
             );
-
+            createdPlaylistId = response.data.id;
             await axios.post(
-                `https://api.spotify.com/v1/playlists/${response.data.id}/tracks`,
+                `https://api.spotify.com/v1/playlists/${createdPlaylistId}/tracks`,
                 {
                     uris: trackURIs,
                 },
@@ -98,6 +99,10 @@ export default function StepFive(props) {
             }
             console.log(error.config);
         }
+        dispatch({
+            type: "UPDATE_NEW_PLAYLIST_ID",
+            payload: createdPlaylistId,
+        });
         props.nextStep();
     };
 

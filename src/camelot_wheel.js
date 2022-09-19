@@ -1,4 +1,6 @@
-﻿const cyclicOffset = (reference, offset, limits) => {
+﻿// https://github.com/regorxxx/Camelot-Wheel-Notation
+
+const cyclicOffset = (reference, offset, limits) => {
     if (offset && reference >= limits[0] && reference <= limits[1]) {
         reference += offset;
         if (reference < limits[0]) {

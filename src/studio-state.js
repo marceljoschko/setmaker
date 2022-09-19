@@ -5,6 +5,7 @@ const initialState = () => ({
     addTracks: false,
     user: { id: "", img: "", name: "" },
     playlistId: "",
+    newPlaylistId: "",
     playlistIdError: false,
     importedTracks: {},
     sortedPlaylist: [],
@@ -55,6 +56,9 @@ const reducer = (state, action) => {
 
         case "UPDATE_PLAYLIST_ID":
             return { ...state, playlistId: action.payload };
+
+        case "UPDATE_NEW_PLAYLIST_ID":
+            return { ...state, newPlaylistId: action.payload };
 
         case "UPDATE_PLAYLIST_ID_ERROR":
             return { ...state, playlistIdError: action.payload };
