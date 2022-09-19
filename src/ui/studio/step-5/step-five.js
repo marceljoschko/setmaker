@@ -1,5 +1,5 @@
 import { ActionButtons, StepContainer } from "../elements";
-import { cloneElement, useEffect } from "react";
+import { cloneElement } from "react";
 import {
     Button,
     Box,
@@ -21,7 +21,7 @@ import { useRef } from "react";
 
 import axios from "axios";
 
-import UploadAndDisplayImage from "./upload-image";
+//import UploadAndDisplayImage from "./upload-image";
 import SetName from "./set-name";
 
 export default function StepFive(props) {
@@ -49,17 +49,16 @@ export default function StepFive(props) {
             } catch (e) {}
         }
         const newOrder = Object.keys(tempOrder);
-
         const trackURIs = [];
 
         for (let i in tempOrder) {
-            trackURIs.push("spotify:track:" + tempOrder[i]);
+            trackURIs.push("spotify:track:" + newOrder[i]);
         }
         try {
             const response = await axios.post(
                 `https://api.spotify.com/v1/users/${user.id}/playlists`,
                 {
-                    name: setName,
+                    name: setName ? setName : "Techno Set",
                     description: setDescription,
                     public: false,
                 },
@@ -110,6 +109,7 @@ export default function StepFive(props) {
                         display: "flex",
                         justifyContent: "space-between",
                     }}
+                    key={item}
                 >
                     <Box sx={{ display: "flex", alignItems: "center" }}>
                         <ListItemAvatar>

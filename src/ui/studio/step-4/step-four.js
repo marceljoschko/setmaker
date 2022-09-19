@@ -1,25 +1,26 @@
 import { ActionButtons, StepContainer } from "../elements";
 import { Button } from "@mui/material";
-import React from "react";
+
 import { useStudioState, useDispatch } from "../../../studio-state";
 import { findCamelotKey, findFlatKey } from "../../../util";
 import axios from "axios";
 import { shuffle } from "d3";
 import { flow } from "lodash";
 import {
-    camelotWheel,
     createHarmonicMixingPattern,
     applyPattern,
 } from "../../../camelot_wheel";
 
 export default function StepFour(props) {
-    const { token, importedTracks, numberOfTracks, energyMap } =
+    const { token, importedTracks, numberOfTracks, energyMap, energy } =
         useStudioState();
     const dispatch = useDispatch();
 
     let trackData = {};
-    let tempMin = 200;
-    let tempMax = 0;
+    let energyMin = 1;
+    let energyMax = 0;
+    let tempoMin = 200;
+    let tempoMax = 0;
 
     const analyzeTracks = async () => {
         let ids = Object.keys(importedTracks).join(",");
@@ -41,11 +42,8 @@ export default function StepFour(props) {
             let temp = audio_features[i];
             let bpmTempo = Math.round(temp.tempo);
 
-            if (bpmTempo > tempMax) {
-                tempMax = bpmTempo;
-            } else if (bpmTempo < tempMin) {
-                tempMin = bpmTempo;
-            }
+            checkEnergyLevel(temp.energy);
+            checkBPMLevel(bpmTempo);
 
             trackData[temp.id] = {
                 ...importedTracks[temp.id],
@@ -58,6 +56,26 @@ export default function StepFour(props) {
                 flat: findFlatKey(temp.key, temp.mode),
             };
         }
+    };
+
+    const checkBPMLevel = (bpm) => {
+        if (bpm > tempoMax) {
+            tempoMax = bpm;
+        } else if (bpm < tempoMin) {
+            tempoMin = bpm;
+        }
+    };
+
+    const checkEnergyLevel = (energy) => {
+        if (energy > energyMax) {
+            energyMax = energy;
+        } else if (energy < energyMin) {
+            energyMin = energy;
+        }
+    };
+
+    const getEnergyBaseline = () => {
+        return Math.abs(energyMax - energyMin) / 2 + energyMin;
     };
 
     const analyzeRecommendations = async (trackArray) => {
@@ -83,6 +101,9 @@ export default function StepFour(props) {
             let temp = audio_features[i];
             let bpmTempo = Math.round(temp.tempo);
 
+            checkEnergyLevel(temp.energy);
+            checkBPMLevel(bpmTempo);
+
             trackData[temp.id] = {
                 ...trackData[temp.id],
                 popularity: trackArray[i].popularity,
@@ -105,26 +126,24 @@ export default function StepFour(props) {
     };
 
     const filterTrackData = (trackData, releaseYear, popularity) => {
-        console.log(trackData);
         let filteredTrackData = flow([
             Object.entries,
             (arr) =>
                 arr.filter(([key, value]) => {
                     if (
                         value.popularity <= popularity.max &&
-                        value.popularity >= popularity.min
+                        value.popularity >= popularity.min &&
+                        value.releaseYear <= releaseYear.max &&
+                        value.releaseYear >= releaseYear.min
                     ) {
-                        if (
-                            value.releaseYear <= releaseYear.max &&
-                            value.releaseYear >= releaseYear.min
-                        ) {
-                            return value;
-                        }
+                        return true;
+                    } else {
+                        return false;
                     }
                 }),
             Object.fromEntries,
         ])(trackData);
-        console.log(filteredTrackData);
+
         return filteredTrackData;
     };
 
@@ -148,12 +167,12 @@ export default function StepFour(props) {
                         seed_genres: "Techno",
                         seed_tracks: tracks[i],
                         limit: 100,
-                        min_tempo: tempMin,
-                        max_tempo: tempMax,
+                        min_tempo: tempoMin,
+                        max_tempo: tempoMax,
                     },
                 }
             );
-            console.log(response);
+
             analyzeRecommendations(response.data.tracks);
         }
     };
@@ -174,6 +193,8 @@ export default function StepFour(props) {
         let iterations = 0;
 
         while (!tracklistComplete) {
+            iterations++;
+            console.log("Versuch: " + iterations);
             let pattern = createHarmonicMixingPattern(numberOfTracks);
             let rndKey = getRandomKeyFromMainTracks(mainTracks);
             let keyArr = applyPattern(rndKey, pattern);
@@ -194,6 +215,7 @@ export default function StepFour(props) {
                     }
                 }
             }
+
             shuffle(fillTracks);
             for (let i = 0; i < numberOfTracks; i++) {
                 if (sortedTracks[i]) {
@@ -204,9 +226,7 @@ export default function StepFour(props) {
                     Object.entries,
                     (arr) =>
                         arr.filter(([key, value]) => {
-                            if (value.camelot === camArr[i]) {
-                                return value;
-                            }
+                            return value.camelot === camArr[i] ? true : false;
                         }),
                     Object.fromEntries,
                 ])(filteredTrackData);
@@ -222,14 +242,12 @@ export default function StepFour(props) {
 
                 sortedTracks[i] = neighborsArr[0] ? neighborsArr[0] : "";
             }
-            iterations++;
+
             if (!sortedTracks.includes("")) {
                 tracklistComplete = true;
             } else {
                 console.log("Failed try again");
             }
-
-            console.log("Versuch: " + iterations);
         }
 
         dispatch({ type: "UPDATE_SORTED_PLAYLIST", payload: sortedTracks });
@@ -240,8 +258,8 @@ export default function StepFour(props) {
         await getRecommendations();
         let filteredTrackData = filterTrackData(
             trackData,
-            { min: 2018, max: 2022 },
-            { min: 0, max: 30 }
+            { min: 2015, max: 2022 },
+            { min: 0, max: 100 }
         );
         await sortTracks(trackData, filteredTrackData);
         dispatch({ type: "UPDATE_TRACK_DATA", payload: trackData });

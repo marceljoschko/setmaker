@@ -1,33 +1,50 @@
-import { ActionButtons, StepContainer, OptionButton } from "../elements";
+import { StepContainer } from "../elements";
 import { Box, TextField, Button } from "@mui/material";
 import { Fragment } from "react";
-import {
-    useStudioState,
-    useDispatch,
-    PLAYLIST_SOURCE_NONE,
-    IMPORT_PLAYLIST,
-} from "../../../studio-state";
+import { useStudioState, useDispatch } from "../../../studio-state";
 
 import axios from "axios";
 
 export default function StepOne(props) {
     const dispatch = useDispatch();
-    const { token, playlistChoice, playlistId } = useStudioState();
+    const { token, playlistId, playlistIdError } = useStudioState();
 
-    const importPlaylist = async () => {
-        dispatch({ type: "CHOOSE_PLAYLIST", payload: IMPORT_PLAYLIST });
-    };
-    const startFromScratch = () => {
-        props.nextStep();
+    const onlyLettersAndNumbers = (str) => {
+        return /^[A-Za-z0-9]*$/.test(str);
     };
 
-    const reselectSource = () => {
-        dispatch({ type: "CHOOSE_PLAYLIST", payload: PLAYLIST_SOURCE_NONE });
+    const parsePlaylistInput = (input) => {
+        let strArr = input.split("playlist/");
+        if (strArr.length > 1) {
+            strArr = strArr[1].split("?");
+            if (strArr.length > 0) input = strArr[0];
+        }
+
+        if (input.length === 22 && onlyLettersAndNumbers(input)) return input;
+        else {
+            return "";
+        }
     };
 
-    const startImport = async () => {
+    const inputCheck = () => {
+        const parsedPlaylistId = parsePlaylistInput(playlistId);
+        if (!parsedPlaylistId) {
+            dispatch({
+                type: "UPDATE_PLAYLIST_ID_ERROR",
+                payload: true,
+            });
+        } else {
+            dispatch({
+                type: "UPDATE_PLAYLIST_ID_ERROR",
+                payload: false,
+            });
+            startImport(parsedPlaylistId);
+        }
+    };
+
+    const startImport = async (parsedPlaylistId) => {
         const response = await axios.get(
-            `https://api.spotify.com/v1/playlists/${playlistId}`,
+            `https://api.spotify.com/v1/playlists/${parsedPlaylistId}`,
             {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -60,104 +77,58 @@ export default function StepOne(props) {
             type: "UPDATE_NUMBER_OF_TRACKS",
             payload: numberLength,
         });
+        dispatch({
+            type: "UPDATE_PLAYLIST_ID",
+            payload: parsedPlaylistId,
+        });
         props.nextStep();
     };
 
-    const body = (() => {
-        switch (playlistChoice) {
-            case PLAYLIST_SOURCE_NONE:
-                return (
-                    <PlaylistSelection
-                        {...{
-                            importPlaylist,
-                            startFromScratch,
-                        }}
-                    />
-                );
-            case IMPORT_PLAYLIST:
-                return (
-                    <ImportPlaylist
-                        {...{ reselectSource, startImport, useDispatch }}
-                    />
-                );
-            default:
-                return "internal error :-(";
-        }
-    })();
-
-    return <StepContainer>{body}</StepContainer>;
-}
-
-const PlaylistSelection = ({ importPlaylist, startFromScratch }) => {
     return (
-        <Fragment>
-            <h1>Select Playlist</h1>
-            <Box
-                sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    flexDirection: ["column", "row"],
-                    maxWidth: 850,
-                    width: "100%",
-                    mx: "auto",
-                    mb: 3,
-                    flex: "1 0 auto",
-                }}
-            >
-                <OptionButton
-                    label="Import Playlist"
-                    onClick={importPlaylist}
-                />
-                <OptionButton
-                    label="Start from Scratch"
-                    onClick={startFromScratch}
-                />
-            </Box>
-        </Fragment>
-    );
-};
+        <StepContainer>
+            <Fragment>
+                <h1>Import Playlist</h1>
 
-const ImportPlaylist = ({ reselectSource, startImport, useDispatch }) => {
-    const dispatch = useDispatch();
-    return (
-        <Fragment>
-            <h1>Import Playlist</h1>
-
-            <Box
-                sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    flexDirection: "column",
-                    maxWidth: 850,
-                    width: "100%",
-                    mb: 3,
-                }}
-            >
-                <TextField
-                    sx={{ minWidth: "250px" }}
-                    id="standard-basic"
-                    label="Playlist ID"
-                    variant="standard"
-                    onChange={(e) =>
-                        dispatch({
-                            type: "IMPORT_PLAYLIST_ID",
-                            payload: e.target.value,
-                        })
-                    }
-                />
                 <Box
                     sx={{
-                        flexGrow: 1,
-                        height: "50px",
-                        display: { xs: "none", md: "flex" },
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        flexDirection: "column",
+                        maxWidth: 850,
+                        width: "100%",
+                        mb: 3,
                     }}
-                />
-                <Button variant="outlined" onClick={startImport}>
-                    Import
-                </Button>
-            </Box>
-        </Fragment>
+                >
+                    <TextField
+                        sx={{ minWidth: "250px" }}
+                        id="standard-basic"
+                        label="Playlist ID"
+                        variant="standard"
+                        error={playlistIdError}
+                        helperText={
+                            playlistIdError ? "Playlist ID wrong!" : " "
+                        }
+                        onChange={(e) =>
+                            dispatch({
+                                type: "UPDATE_PLAYLIST_ID",
+                                payload: e.target.value,
+                            })
+                        }
+                    />
+
+                    <Box
+                        sx={{
+                            flexGrow: 1,
+                            height: "50px",
+                            display: { xs: "none", md: "flex" },
+                        }}
+                    />
+                    <Button variant="outlined" onClick={inputCheck}>
+                        Import
+                    </Button>
+                </Box>
+            </Fragment>
+        </StepContainer>
     );
-};
+}

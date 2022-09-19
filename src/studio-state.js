@@ -1,16 +1,13 @@
 import { createContext, useContext, useReducer } from "react";
 
-export const PLAYLIST_SOURCE_NONE = "none";
-export const IMPORT_PLAYLIST = "import";
-
 const initialState = () => ({
     token: "",
     expiresIn: 0,
     addTracks: false,
     expirationSet: false,
     user: { id: "", img: "", name: "" },
-    playlistChoice: IMPORT_PLAYLIST,
     playlistId: "",
+    playlistIdError: false,
     importedTracks: {},
     sortedPlaylist: [],
     setName: "",
@@ -70,11 +67,11 @@ const reducer = (state, action) => {
         case "UPDATE_USER":
             return { ...state, user: action.payload };
 
-        case "CHOOSE_PLAYLIST":
-            return { ...state, playlistChoice: action.payload };
-
-        case "IMPORT_PLAYLIST_ID":
+        case "UPDATE_PLAYLIST_ID":
             return { ...state, playlistId: action.payload };
+
+        case "UPDATE_PLAYLIST_ID_ERROR":
+            return { ...state, playlistIdError: action.payload };
 
         case "IMPORT_PLAYLIST_TRACKS":
             return { ...state, importedTracks: action.payload };
