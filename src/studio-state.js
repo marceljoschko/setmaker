@@ -14,6 +14,7 @@ const initialState = () => ({
     minNumberOfTracks: 0,
     numberOfTracks: 20,
     trackData: {},
+    energyFeature: false,
     maxTempo: 0,
     minTempo: 0,
     energyPoints: [

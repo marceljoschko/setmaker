@@ -2,9 +2,9 @@ import { ActionButtons, StepContainer } from "../elements";
 import { Button } from "@mui/material";
 
 import { useStudioState, useDispatch } from "../../../studio-state";
-import { findCamelotKey, findFlatKey } from "../../../util";
+import { findCamelotKey, findFlatKey, ALL_FLAT_KEYS } from "../../../util";
 import axios from "axios";
-import { shuffle } from "d3";
+import { index, shuffle } from "d3";
 import { flow } from "lodash";
 import {
     createHarmonicMixingPattern,
@@ -12,7 +12,7 @@ import {
 } from "../../../camelot_wheel";
 
 export default function StepFour(props) {
-    const { token, importedTracks, numberOfTracks, energyMap, energy } =
+    const { token, importedTracks, numberOfTracks, energyMap, energyFeature } =
         useStudioState();
     const dispatch = useDispatch();
 
@@ -182,7 +182,43 @@ export default function StepFour(props) {
         return trackData[mainTracks[rndNum]].flat;
     };
 
+    const scale = (inputY, yRange, xRange) => {
+        const [xMin, xMax] = xRange;
+        const [yMin, yMax] = yRange;
+
+        const percent = (inputY - yMin) / (yMax - yMin);
+        const outputX = percent * (xMax - xMin) + xMin;
+
+        return outputX;
+    };
+
+    const convertEnergyMap = () => {
+        let convertedEnergy = [];
+
+        for (let i in energyMap) {
+            convertedEnergy[i] = scale(
+                energyMap[i],
+                [0, 1],
+                [energyMin, energyMax]
+            );
+        }
+
+        return convertedEnergy;
+    };
+
+    const getRandomFlatKey = () => {
+        let rndNum = Math.floor(Math.random() * ALL_FLAT_KEYS.length);
+        return ALL_FLAT_KEYS[rndNum];
+    };
+
+    const indexesOf = (arr, item) =>
+        arr.reduce((acc, v, i) => (v === item && acc.push(i), acc), []);
+
     const sortTracks = async (trackData, filteredTrackData) => {
+        const convertedEnergyMap = convertEnergyMap();
+
+        let energyTolerance = getEnergyBaseline() / 2;
+
         let fillTracks = Object.keys(filteredTrackData);
 
         let mainTracks = Object.keys(importedTracks);
@@ -192,13 +228,79 @@ export default function StepFour(props) {
         let tracklistComplete = false;
         let iterations = 0;
 
+        let startingTrack = 0;
+
+        let mainTracksNRG = mainTracks.map((x) => {
+            return trackData[x].energy;
+        });
+
+        for (let i in mainTracksNRG) {
+            if (
+                Math.abs(mainTracksNRG[i] - convertedEnergyMap[0]) <
+                Math.abs(mainTracksNRG[startingTrack] - convertedEnergyMap[0])
+            ) {
+                startingTrack = i;
+            }
+        }
+
+        let startingKey = trackData[mainTracks[startingTrack]].flat;
+
         while (!tracklistComplete) {
             iterations++;
             console.log("Versuch: " + iterations);
+
             let pattern = createHarmonicMixingPattern(numberOfTracks);
+
+            //let rndKey = getRandomFlatKey();
             let rndKey = getRandomKeyFromMainTracks(mainTracks);
             let keyArr = applyPattern(rndKey, pattern);
             let camArr = keyArr.map((key) => key.hour + key.letter);
+
+            // for (let i in mainTracks) {
+            //     let tempKey = trackData[mainTracks[i]].camelot;
+
+            //     const indexes = [];
+            //     let addedTrack = false;
+
+            //     for (let index = 0; index < camArr.length; index++) {
+            //         if (camArr[index] === tempKey) {
+            //             indexes.push(index);
+            //         }
+            //     }
+            //     if (indexes.length > 0) {
+            //         shuffle(indexes);
+            //         if (energyFeature) {
+            //             for (let j in indexes) {
+            //                 if (
+            //                     Math.abs(
+            //                         mainTracksNRG[i] -
+            //                             convertedEnergyMap[indexes[j]]
+            //                     ) <= energyTolerance
+            //                 ) {
+            //                     sortedTracks[indexes[j]] = mainTracks[i];
+            //                     camArr[indexes[j]] = "XX";
+            //                     addedTrack = true;
+            //                     break;
+            //                 }
+            //             }
+            //             if (!addedTrack) {
+            //                 const index = mainTracks.indexOf(mainTracks[i]);
+            //                 if (index > -1) {
+            //                     mainTracks.splice(index, 1);
+            //                 }
+            //             }
+            //         } else {
+            //             sortedTracks[indexes[0]] = mainTracks[i];
+            //             camArr[indexes[0]] = "XX";
+            //             continue;
+            //         }
+            //     } else {
+            //         const index = mainTracks.indexOf(mainTracks[i]);
+            //         if (index > -1) {
+            //             mainTracks.splice(index, 1);
+            //         }
+            //     }
+            // }
 
             for (let i in mainTracks) {
                 let tempKey = trackData[mainTracks[i]].camelot;
@@ -222,7 +324,7 @@ export default function StepFour(props) {
                     continue;
                 }
 
-                let neighbors = flow([
+                let camelotNeighbors = flow([
                     Object.entries,
                     (arr) =>
                         arr.filter(([key, value]) => {
@@ -231,7 +333,21 @@ export default function StepFour(props) {
                     Object.fromEntries,
                 ])(filteredTrackData);
 
-                let neighborsArr = Object.keys(neighbors);
+                // let energyNeighbors = flow([
+                //     Object.entries,
+                //     (arr) =>
+                //         arr.filter(([key, value]) => {
+                //             return value.energy <=
+                //                 convertedEnergyMap[i] + energyTolerance &&
+                //                 value.energy >=
+                //                     convertedEnergyMap[i] - energyTolerance
+                //                 ? true
+                //                 : false;
+                //         }),
+                //     Object.fromEntries,
+                // ])(camelotNeighbors);
+
+                let neighborsArr = Object.keys(camelotNeighbors);
 
                 shuffle(neighborsArr);
 
@@ -258,7 +374,7 @@ export default function StepFour(props) {
         await getRecommendations();
         let filteredTrackData = filterTrackData(
             trackData,
-            { min: 2015, max: 2022 },
+            { min: 2000, max: 2022 },
             { min: 0, max: 100 }
         );
         await sortTracks(trackData, filteredTrackData);

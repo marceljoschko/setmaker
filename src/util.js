@@ -56,6 +56,33 @@ const FLAT_MAJOR = [
     "B",
 ];
 
+export const ALL_FLAT_KEYS = [
+    "Cm",
+    "Dbm",
+    "Dm",
+    "Ebm",
+    "Em",
+    "Fm",
+    "Fbm",
+    "Gm",
+    "Abm",
+    "Am",
+    "Bbm",
+    "Bm",
+    "C",
+    "Db",
+    "D",
+    "Eb",
+    "E",
+    "F",
+    "Fb",
+    "G",
+    "Ab",
+    "A",
+    "Bb",
+    "B",
+];
+
 export const findCamelotKey = (key, mode) => {
     return mode ? CAMELOT_MAJOR[key] : CAMELOT_MINOR[key];
 };
