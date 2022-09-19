@@ -1,4 +1,4 @@
-import { BottomNavigation, Box, Button, Paper } from "@mui/material";
+import { Box, Button, Paper } from "@mui/material";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCaretLeft, faCaretRight } from "@fortawesome/free-solid-svg-icons";
@@ -28,29 +28,35 @@ export const StepContainer = ({ children }) => (
 
 export const ActionButtons = ({ prev = null, next = null }) => {
     return (
-        <Paper sx={{ position: "fixed", bottom: 0, left: 0, right: 0 }}>
-            <BottomNavigation
-                variant="fixed"
-                sx={{ display: "flex", alignItems: "end", minHeight: "40px" }}
-            >
-                <Box sx={{ flex: "1 1 0", textAlign: "left" }}>
-                    {prev && (
+        <Paper
+            elevation={0}
+            sx={{
+                backgroundImage: "",
+                backgroundColor: "#121212",
+                position: "fixed",
+                bottom: 0,
+                left: 0,
+                right: 0,
+            }}
+        >
+            <Box sx={{ display: "flex", flexDirection: "row" }}>
+                {prev && (
+                    <Box sx={{ flex: "1 1 0", textAlign: "left" }}>
                         <Button
                             sx={{
                                 whiteSpace: "nowrap",
                             }}
                             onClick={prev.onClick}
                             disabled={prev.disabled}
-                            title="Back"
                         >
                             <FontAwesomeIcon icon={faCaretLeft} />
                             <p>Back</p>
                         </Button>
-                    )}
-                </Box>
+                    </Box>
+                )}
 
-                <Box sx={{ flex: "1 1 0", textAlign: "right" }}>
-                    {next && (
+                {next && (
+                    <Box sx={{ flex: "1 1 0", textAlign: "right" }}>
                         <Button
                             sx={{
                                 whiteSpace: "nowrap",
@@ -63,9 +69,9 @@ export const ActionButtons = ({ prev = null, next = null }) => {
                             <p>Next</p>
                             <FontAwesomeIcon icon={faCaretRight} />
                         </Button>
-                    )}
-                </Box>
-            </BottomNavigation>
+                    </Box>
+                )}
+            </Box>
         </Paper>
     );
 };

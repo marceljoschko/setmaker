@@ -18,15 +18,16 @@ export default function StepSix(props) {
     return (
         <StepContainer>
             <h1>Happy mixing :)</h1>
-            <Box>
+            <Box sx={{ display: "flex", width: "600px", mb: 3 }}>
                 <iframe
                     src={embedStr}
                     width="100%"
-                    height="380"
+                    height="400"
                     frameBorder="0"
                     allowfullscreen=""
                     allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
                     loading="lazy"
+                    title="Techno Playlist"
                 ></iframe>
             </Box>
 
