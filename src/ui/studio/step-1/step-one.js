@@ -42,6 +42,7 @@ export default function StepOne(props) {
             imported[temp.id] = {
                 popularity: temp.popularity,
                 releaseDate: temp.album.release_date,
+                releaseYear: parseInt(temp.album.release_date.slice(0, 4)),
                 images: temp.album.images,
                 trackName: temp.name,
                 artists: temp.album.artists,

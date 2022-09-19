@@ -90,6 +90,9 @@ export default function StepFour(props) {
                 artists: trackArray[i].album.artists,
                 images: trackArray[i].album.images,
                 releaseDate: trackArray[i].album.release_date,
+                releaseYear: parseInt(
+                    trackArray[i].album.release_date.slice(0, 4)
+                ),
                 energy: temp.energy,
                 valence: temp.valence,
                 key: temp.key,
@@ -99,6 +102,30 @@ export default function StepFour(props) {
                 flat: findFlatKey(temp.key, temp.mode),
             };
         }
+    };
+
+    const filterTrackData = (trackData, releaseYear, popularity) => {
+        console.log(trackData);
+        let filteredTrackData = flow([
+            Object.entries,
+            (arr) =>
+                arr.filter(([key, value]) => {
+                    if (
+                        value.popularity <= popularity.max &&
+                        value.popularity >= popularity.min
+                    ) {
+                        if (
+                            value.releaseYear <= releaseYear.max &&
+                            value.releaseYear >= releaseYear.min
+                        ) {
+                            return value;
+                        }
+                    }
+                }),
+            Object.fromEntries,
+        ])(trackData);
+        console.log(filteredTrackData);
+        return filteredTrackData;
     };
 
     const getRecommendations = async () => {
@@ -131,30 +158,30 @@ export default function StepFour(props) {
         }
     };
 
-    const sortTracks = async () => {
-        let fillTracks = Object.keys(trackData);
+    const sortTracks = async (filteredTrackData) => {
+        let fillTracks = Object.keys(filteredTrackData);
 
         let mainTracks = Object.keys(importedTracks);
 
         let sortedTracks = new Array(numberOfTracks).fill("");
 
-        let trackCount = 0;
-
         let pattern = createHarmonicMixingPattern(numberOfTracks);
-        let keyArr = applyPattern(trackData[mainTracks[0]].flat, pattern);
+        let keyArr = applyPattern(
+            filteredTrackData[mainTracks[0]].flat,
+            pattern
+        );
         let camArr = keyArr.map((key) => key.hour + key.letter);
-        console.log(camArr);
+
         // try to place main tracks based of pattern
 
         for (let i in mainTracks) {
-            let tempKey = trackData[mainTracks[i]].camelot;
+            let tempKey = filteredTrackData[mainTracks[i]].camelot;
 
             if (camArr.indexOf(tempKey) > -1) {
                 let pos = camArr.indexOf(tempKey);
 
                 sortedTracks[pos] = mainTracks[i];
                 camArr[pos] = "XX";
-                trackCount++;
             } else {
                 const index = mainTracks.indexOf(mainTracks[i]);
                 if (index > -1) {
@@ -164,7 +191,6 @@ export default function StepFour(props) {
         }
 
         shuffle(fillTracks);
-        console.log(trackData);
 
         for (let i = 0; i < numberOfTracks; i++) {
             if (sortedTracks[i]) {
@@ -180,7 +206,7 @@ export default function StepFour(props) {
                         }
                     }),
                 Object.fromEntries,
-            ])(trackData);
+            ])(filteredTrackData);
 
             let neighborsArr = Object.keys(neighbors);
 
@@ -198,8 +224,13 @@ export default function StepFour(props) {
     const createSet = async () => {
         await analyzeTracks();
         await getRecommendations();
-        await sortTracks();
-        dispatch({ type: "UPDATE_TRACK_DATA", payload: trackData });
+        let filteredTrackData = filterTrackData(
+            trackData,
+            { min: 2018, max: 2022 },
+            { min: 0, max: 30 }
+        );
+        await sortTracks(filteredTrackData);
+        dispatch({ type: "UPDATE_TRACK_DATA", payload: filteredTrackData });
         props.nextStep();
     };
 
