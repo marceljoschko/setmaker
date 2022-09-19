@@ -145,7 +145,7 @@ export default function StepFour(props) {
                     },
                     params: {
                         seed_artists: artists,
-                        seed_genres: "Raw Techno",
+                        seed_genres: "Techno",
                         seed_tracks: tracks[i],
                         limit: 100,
                         min_tempo: tempMin,
@@ -153,69 +153,83 @@ export default function StepFour(props) {
                     },
                 }
             );
-
+            console.log(response);
             analyzeRecommendations(response.data.tracks);
         }
     };
 
-    const sortTracks = async (filteredTrackData) => {
+    const getRandomKeyFromMainTracks = (mainTracks) => {
+        let rndNum = Math.floor(Math.random() * mainTracks.length);
+        return trackData[mainTracks[rndNum]].flat;
+    };
+
+    const sortTracks = async (trackData, filteredTrackData) => {
         let fillTracks = Object.keys(filteredTrackData);
 
         let mainTracks = Object.keys(importedTracks);
 
         let sortedTracks = new Array(numberOfTracks).fill("");
 
-        let pattern = createHarmonicMixingPattern(numberOfTracks);
-        let keyArr = applyPattern(
-            filteredTrackData[mainTracks[0]].flat,
-            pattern
-        );
-        let camArr = keyArr.map((key) => key.hour + key.letter);
+        let tracklistComplete = false;
+        let iterations = 0;
 
-        // try to place main tracks based of pattern
+        while (!tracklistComplete) {
+            let pattern = createHarmonicMixingPattern(numberOfTracks);
+            let rndKey = getRandomKeyFromMainTracks(mainTracks);
+            let keyArr = applyPattern(rndKey, pattern);
+            let camArr = keyArr.map((key) => key.hour + key.letter);
 
-        for (let i in mainTracks) {
-            let tempKey = filteredTrackData[mainTracks[i]].camelot;
+            for (let i in mainTracks) {
+                let tempKey = trackData[mainTracks[i]].camelot;
 
-            if (camArr.indexOf(tempKey) > -1) {
-                let pos = camArr.indexOf(tempKey);
+                if (camArr.indexOf(tempKey) > -1) {
+                    let pos = camArr.indexOf(tempKey);
 
-                sortedTracks[pos] = mainTracks[i];
-                camArr[pos] = "XX";
-            } else {
-                const index = mainTracks.indexOf(mainTracks[i]);
-                if (index > -1) {
-                    mainTracks.splice(index, 1);
+                    sortedTracks[pos] = mainTracks[i];
+                    camArr[pos] = "XX";
+                } else {
+                    const index = mainTracks.indexOf(mainTracks[i]);
+                    if (index > -1) {
+                        mainTracks.splice(index, 1);
+                    }
                 }
             }
-        }
+            shuffle(fillTracks);
+            for (let i = 0; i < numberOfTracks; i++) {
+                if (sortedTracks[i]) {
+                    continue;
+                }
 
-        shuffle(fillTracks);
+                let neighbors = flow([
+                    Object.entries,
+                    (arr) =>
+                        arr.filter(([key, value]) => {
+                            if (value.camelot === camArr[i]) {
+                                return value;
+                            }
+                        }),
+                    Object.fromEntries,
+                ])(filteredTrackData);
 
-        for (let i = 0; i < numberOfTracks; i++) {
-            if (sortedTracks[i]) {
-                continue;
-            }
+                let neighborsArr = Object.keys(neighbors);
 
-            let neighbors = flow([
-                Object.entries,
-                (arr) =>
-                    arr.filter(([key, value]) => {
-                        if (value.camelot === camArr[i]) {
-                            return value;
-                        }
-                    }),
-                Object.fromEntries,
-            ])(filteredTrackData);
-
-            let neighborsArr = Object.keys(neighbors);
-
-            shuffle(neighborsArr);
-
-            while (sortedTracks.includes(neighborsArr[0])) {
                 shuffle(neighborsArr);
+
+                while (sortedTracks.includes(neighborsArr[0])) {
+                    neighborsArr.shift();
+                    shuffle(neighborsArr);
+                }
+
+                sortedTracks[i] = neighborsArr[0] ? neighborsArr[0] : "";
             }
-            sortedTracks[i] = neighborsArr[0];
+            iterations++;
+            if (!sortedTracks.includes("")) {
+                tracklistComplete = true;
+            } else {
+                console.log("Failed try again");
+            }
+
+            console.log("Versuch: " + iterations);
         }
 
         dispatch({ type: "UPDATE_SORTED_PLAYLIST", payload: sortedTracks });
@@ -229,8 +243,8 @@ export default function StepFour(props) {
             { min: 2018, max: 2022 },
             { min: 0, max: 30 }
         );
-        await sortTracks(filteredTrackData);
-        dispatch({ type: "UPDATE_TRACK_DATA", payload: filteredTrackData });
+        await sortTracks(trackData, filteredTrackData);
+        dispatch({ type: "UPDATE_TRACK_DATA", payload: trackData });
         props.nextStep();
     };
 
