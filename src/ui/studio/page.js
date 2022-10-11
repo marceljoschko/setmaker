@@ -11,8 +11,8 @@ export default function Wizard({ activeStep, updateActiveStep, firstStep }) {
     return (
         <Steps activeStep={activeStep} updateActiveStep={updateActiveStep}>
             <StepOne />
-            <StepTwo />
-            <StepThree />
+            {/* <StepTwo /> */}
+            {/* <StepThree /> */}
             <StepFour />
             <StepFive />
             <StepSix firstStep={firstStep} />

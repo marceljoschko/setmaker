@@ -88,12 +88,15 @@ export default function StepFour(props) {
         return Math.abs(energyMax - energyMin) / 2 + energyMin;
     };
 
-    const analyzeRecommendations = async (trackArray) => {
+    const analyzeRecommendations = async (baseTrack, trackArray) => {
         let ids = trackArray
             .map((track) => {
                 return track.id;
             })
             .join(",");
+
+        let baseValence = trackData[baseTrack].valence;
+        let baseEnergy = trackData[baseTrack].energy;
 
         const features = await axios.get(
             "https://api.spotify.com/v1/audio-features",
@@ -113,6 +116,13 @@ export default function StepFour(props) {
 
             checkEnergyLevel(temp.energy);
             checkBPMLevel(bpmTempo);
+
+            if (
+                Math.abs(temp.valence - baseValence) < 0.1 &&
+                Math.abs(temp.energy - baseEnergy) < 0.1
+            ) {
+                continue;
+            }
 
             trackData[temp.id] = {
                 ...trackData[temp.id],
@@ -185,7 +195,7 @@ export default function StepFour(props) {
                     }
                 );
 
-                analyzeRecommendations(response.data.tracks);
+                analyzeRecommendations(tracks[i], response.data.tracks);
             } catch (error) {
                 if (error.response) {
                     console.log(error.response.data);
@@ -237,20 +247,26 @@ export default function StepFour(props) {
 
     const sortTracks = async (trackData, filteredTrackData) => {
         const convertedEnergyMap = convertEnergyMap();
+
         let fillTracks = Object.keys(filteredTrackData);
         let mainTracks = Object.keys(importedTracks);
         let sortedTracks = new Array(numberOfTracks).fill("");
         let tracklistComplete = false;
         let iterations = 0;
 
+        // Sort algorithm
+
         while (!tracklistComplete) {
             iterations++;
             console.log("Versuch: " + iterations);
 
+            // create a pattern of mixing moves
             let pattern = createHarmonicMixingPattern(numberOfTracks);
             let rndKey = getRandomKeyFromMainTracks(mainTracks);
             let keyArr = applyPattern(rndKey, pattern);
             let camArr = keyArr.map((key) => key.hour + key.letter);
+
+            // try to place all imported tracks
 
             for (let i in mainTracks) {
                 let tempKey = trackData[mainTracks[i]].camelot;
@@ -267,6 +283,8 @@ export default function StepFour(props) {
                     }
                 }
             }
+
+            // fill all empty spaces with recommendation tracks
 
             shuffle(fillTracks);
             for (let i = 0; i < numberOfTracks; i++) {
@@ -295,6 +313,8 @@ export default function StepFour(props) {
                 sortedTracks[i] = neighborsArr[0] ? neighborsArr[0] : "";
             }
 
+            // check if everything in sortedTracks is filled, else try again
+
             if (!sortedTracks.includes("")) {
                 tracklistComplete = true;
             } else {
@@ -302,6 +322,15 @@ export default function StepFour(props) {
             }
         }
 
+        dispatch({ type: "UPDATE_SORTED_PLAYLIST", payload: sortedTracks });
+    };
+
+    const addTracks = (filteredTrackData) => {
+        let sortedTracks = [];
+        let tracks = Object.keys(filteredTrackData);
+        for (let i in tracks) {
+            sortedTracks.push(tracks[i]);
+        }
         dispatch({ type: "UPDATE_SORTED_PLAYLIST", payload: sortedTracks });
     };
 
@@ -314,7 +343,8 @@ export default function StepFour(props) {
             { min: 2015, max: 2022 },
             { min: 0, max: 100 }
         );
-        await sortTracks(trackData, filteredTrackData);
+        //await sortTracks(filteredTrackData);
+        await addTracks(filteredTrackData);
         dispatch({ type: "UPDATE_TRACK_DATA", payload: trackData });
         dispatch({ type: "UPDATE_STARTED_PROCESS", payload: false });
         props.nextStep();

@@ -4,12 +4,14 @@ import { useDispatch, useStudioState } from "../../../studio-state";
 
 export default function StepSix(props) {
     const dispatch = useDispatch();
-    const { newPlaylistId } = useStudioState();
+    const { newPlaylistId, token, user } = useStudioState();
 
     const tryAgain = () => {
         dispatch({
             type: "RESET",
         });
+        dispatch({ type: "UPDATE_TOKEN", payload: token });
+        dispatch({ type: "UPDATE_USER", payload: user });
         props.firstStep();
     };
 

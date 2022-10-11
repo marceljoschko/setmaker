@@ -32,28 +32,11 @@ export default function StepFive(props) {
     let defaultText = "Techno Set created at " + getCurrentDate();
 
     const createPlaylist = async () => {
-        let tracklist = document.querySelectorAll("[data-track-id]");
-
-        const tempOrder = {};
-
-        for (let i in tracklist) {
-            try {
-                let info = tracklist[i].parentElement.style.transform;
-                let first = info.slice(16);
-
-                let trackPosition =
-                    parseInt(first.substring(0, first.indexOf("p"))) / 50;
-
-                tempOrder[trackPosition] =
-                    tracklist[i].getAttribute("data-track-id");
-            } catch (e) {}
-        }
-
         const trackURIs = [];
         let createdPlaylistId = "";
 
-        for (let i in tempOrder) {
-            trackURIs.push("spotify:track:" + tempOrder[i]);
+        for (let i in sortedPlaylist) {
+            trackURIs.push("spotify:track:" + sortedPlaylist[i]);
         }
         try {
             const response = await axios.post(
@@ -70,17 +53,22 @@ export default function StepFive(props) {
                 }
             );
             createdPlaylistId = response.data.id;
-            await axios.post(
-                `https://api.spotify.com/v1/playlists/${createdPlaylistId}/tracks`,
-                {
-                    uris: trackURIs,
-                },
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
+
+            let addedTracks = 0;
+            while (addedTracks < sortedPlaylist.length) {
+                await axios.post(
+                    `https://api.spotify.com/v1/playlists/${createdPlaylistId}/tracks`,
+                    {
+                        uris: trackURIs.slice(addedTracks, addedTracks + 100),
                     },
-                }
-            );
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
+                addedTracks += 100;
+            }
         } catch (error) {
             if (error.response) {
                 console.log(error.response.data);
@@ -208,7 +196,7 @@ export default function StepFive(props) {
                 </Box>
             </Box>
 
-            <Box
+            {/* <Box
                 sx={{
                     display: "flex",
                     justifyContent: "space-evenly",
@@ -234,7 +222,7 @@ export default function StepFive(props) {
                         {generate(sortedPlaylist)}
                     </DraggableList>
                 </List>
-            </Box>
+            </Box> */}
 
             <ActionButtons prev={{ onClick: props.previousStep }} />
         </StepContainer>
